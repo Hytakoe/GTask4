@@ -3,9 +3,12 @@ package com.cgvsu.render_engine;
 import java.util.ArrayList;
 
 import com.cgvsu.math.Vector3f;
+import com.cgvsu.rasterization.Rasterization;
 import javafx.scene.canvas.GraphicsContext;
 import javax.vecmath.*;
 import com.cgvsu.model.Model;
+import javafx.scene.paint.Color;
+
 import static com.cgvsu.render_engine.GraphicConveyor.*;
 
 public class RenderEngine {
@@ -45,6 +48,18 @@ public class RenderEngine {
                         resultPoints.get(vertexInPolygonInd - 1).y,
                         resultPoints.get(vertexInPolygonInd).x,
                         resultPoints.get(vertexInPolygonInd).y);
+                if (vertexInPolygonInd >= 2) {
+                    Rasterization.drawTriangle(graphicsContext.getPixelWriter(),
+                            (int) resultPoints.get(vertexInPolygonInd - 2).x,
+                            (int) resultPoints.get(vertexInPolygonInd - 2).y,
+                            (int) resultPoints.get(vertexInPolygonInd - 1).x,
+                            (int) resultPoints.get(vertexInPolygonInd - 1).y,
+                            (int) resultPoints.get(vertexInPolygonInd).x,
+                            (int) resultPoints.get(vertexInPolygonInd).y,
+                            Color.GREEN,
+                            Color.RED,
+                            Color.BLUE);
+                }
             }
 
             if (nVerticesInPolygon > 0)
