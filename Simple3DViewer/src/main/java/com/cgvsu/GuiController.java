@@ -1,5 +1,6 @@
 package com.cgvsu;
 
+import com.cgvsu.model.Triangulator;
 import com.cgvsu.render_engine.RenderEngine;
 import javafx.fxml.FXML;
 import javafx.animation.Animation;
@@ -11,10 +12,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+
+import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
+import javax.imageio.ImageIO;
 import javax.vecmath.Vector3f;
 
 import com.cgvsu.model.Model;
@@ -32,6 +36,15 @@ public class GuiController {
     private Canvas canvas;
 
     private Model mesh = null;
+    static BufferedImage texture;
+
+    static {
+        try {
+            texture = ImageIO.read(Path.of("C:/Users/selyu/Downloads/caracal_texture.png").toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private Camera camera = new Camera(
             new Vector3f(0, 00, 100),
@@ -56,7 +69,12 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             if (mesh != null) {
-                RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height);
+                Triangulator.triangulateModel(mesh);
+                try {
+                    RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height, texture);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
