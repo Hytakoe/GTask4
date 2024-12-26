@@ -1,6 +1,7 @@
 package com.cgvsu;
 
 import com.cgvsu.model.Triangulator;
+import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
 import javafx.fxml.FXML;
 import javafx.animation.Animation;
@@ -36,15 +37,8 @@ public class GuiController {
     private Canvas canvas;
 
     private Model mesh = null;
-    static BufferedImage texture;
+    private BufferedImage texture;
 
-    static {
-        try {
-            texture = ImageIO.read(Path.of("C:/Users/selyu/Downloads/caracal_texture.png").toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private Camera camera = new Camera(
             new Vector3f(0, 00, 100),
@@ -88,6 +82,9 @@ public class GuiController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
         fileChooser.setTitle("Load Model");
 
+        String projectDir = System.getProperty("user.dir");
+        fileChooser.setInitialDirectory(new File(projectDir));
+
         File file = fileChooser.showOpenDialog((Stage) canvas.getScene().getWindow());
         if (file == null) {
             return;
@@ -100,7 +97,62 @@ public class GuiController {
             mesh = ObjReader.read(fileContent);
             // todo: обработка ошибок
         } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
 
+    @FXML
+    private void onSaveModelMenuItemClick() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
+        fileChooser.setTitle("Save Model");
+
+        // Устанавливаем начальную директорию как папку проекта
+        String projectDir = System.getProperty("user.dir");
+        fileChooser.setInitialDirectory(new File(projectDir));
+
+        // Открываем диалог сохранения файла
+        File file = fileChooser.showSaveDialog((Stage) canvas.getScene().getWindow());
+        if (file == null) {
+            return; // Если пользователь закрыл диалог без выбора файла
+        }
+
+        // Получаем путь к выбранному файлу
+        Path filePath = Path.of(file.getAbsolutePath());
+
+        try {
+            String modelData = ObjWriter.write(mesh);
+            Files.write(filePath, modelData.getBytes()); // Записываем данные в файл
+            System.out.println("Модель успешно сохранена в файл: " + filePath);
+        } catch (IOException exception) {
+            // Обработка ошибок записи файла
+            exception.printStackTrace();
+        }
+    }
+
+
+
+    @FXML
+    private void onLoadTextureMenuItemClick() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Texture");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif")
+        );
+
+        String projectDir = System.getProperty("user.dir");
+        fileChooser.setInitialDirectory(new File(projectDir));
+
+        File file = fileChooser.showOpenDialog((Stage) canvas.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+        try {
+            texture = ImageIO.read(file);
+            System.out.println("Текстура успешно загружена: " + file.getAbsolutePath());
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
