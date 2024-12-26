@@ -91,7 +91,20 @@ public class Vector3f {
             throw new IllegalArgumentException("Division by zero or near-zero value");
         }
     }
-
+    // Возвращает величину (длину) вектора
+    public float magnitude(Vector3f v) {
+        return (float) Math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+    }
+    public float magnitude() {
+        return (float) Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
+    }
+    // Возвращает нормализованный вектор (с длиной 1)
+    public void normalize(Vector3f v) {
+        float magnitude = magnitude(v);
+        v.x /= magnitude;
+        v.y /= magnitude;
+        v.z /= magnitude;
+    }
     public double dotProduct(Vector3f v) {
         return this.x * v.getX() + this.y * v.getY() + this.z * v.getZ();
     }
@@ -142,6 +155,32 @@ public class Vector3f {
 
         // Деление на W для преобразования в нормализованное устройство
         return new Vector3f(x / w, y / w, z / w);
+    }
+    // Возвращает вектор, перпендикулярный двум переданным (векторное произведение)
+    public Vector3f cross(Vector3f v1, Vector3f v2) {
+        float vNormalX = (float) ((v1.y * v2.z) - (v1.z * v2.y));
+        float vNormalY = (float) ((v1.z * v2.x) - (v1.x * v2.z));
+        float vNormalZ = (float) ((v1.x * v2.y) - (v1.y * v2.x));
+        return new Vector3f(vNormalX, vNormalY, vNormalZ);
+    }
+    // Возвращает вектор между 2мя точками
+    public Vector3f vector(Vector3f point1, Vector3f point2) {
+        float vectorX = (float) (point1.x - point2.x);
+        float vectorY = (float) (point1.y - point2.y);
+        float vectorZ = (float) (point1.z - point2.z);
+        return new Vector3f(vectorX, vectorY, vectorZ);
+    }
+    public Vector3f normalPolygon(Vector3f v0, Vector3f v1, Vector3f v2) {
+        Vector3f newV1 = vector(v1, v0);
+        Vector3f newV2 = vector(v2, v0);
+
+        Vector3f vNormal = cross(newV1, newV2);
+        normalize(vNormal);
+        return vNormal;
+    }
+    // Деление вектора на скаляр
+    public Vector3f divide(float scalar) {
+        return new Vector3f(x / scalar, y / scalar, z / scalar);
     }
 
     public void setX(double d) {

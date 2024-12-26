@@ -41,7 +41,7 @@ public class GuiController {
 
 
     private Camera camera = new Camera(
-            new Vector3f(0, 00, 100),
+            new Vector3f(0, 0, 100),
             new Vector3f(0, 0, 0),
             1.0F, 1, 0.01F, 100);
 
@@ -64,6 +64,7 @@ public class GuiController {
 
             if (mesh != null) {
                 Triangulator.triangulateModel(mesh);
+                mesh.calculateVertexNormals();
                 try {
                     RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height, texture);
                 } catch (IOException e) {

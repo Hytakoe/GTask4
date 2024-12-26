@@ -1,5 +1,7 @@
 package com.cgvsu.model;
 
+import com.cgvsu.math.vector.Vector3f;
+
 import java.util.ArrayList;
 
 public class Polygon {
@@ -7,6 +9,7 @@ public class Polygon {
     private ArrayList<Integer> vertexIndices;
     private ArrayList<Integer> textureVertexIndices;
     private ArrayList<Integer> normalIndices;
+    private Vector3f normal;
 
 
     public Polygon() {
@@ -40,5 +43,12 @@ public class Polygon {
 
     public ArrayList<Integer> getNormalIndices() {
         return normalIndices;
+    }
+    public Vector3f getNormal() {
+        return normal;
+    }
+
+    public void setNormal(Vector3f normal) {
+        this.normal = normal;
     }
 }
