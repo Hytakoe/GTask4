@@ -47,8 +47,8 @@ public class RenderEngine {
         modelViewProjectionMatrix.mul(viewMatrix);
         modelViewProjectionMatrix.mul(projectionMatrix);
         Double[][] ZBuffer = new Double[width][height];
-        for (int x = 0; x < width - 1; x++) {
-            for (int y = 0; y < height - 1; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 ZBuffer[x][y] = 9999.0;
             }
         }
@@ -74,7 +74,8 @@ public class RenderEngine {
                 resultPoints.add(resultPoint);
                 textureResultPoints.add(texturePoint);
             }
-            draw(nVerticesInPolygon, graphicsContext, resultPoints, zCoordinates, textureResultPoints, ZBuffer, texture, drawLines, drawTexture, useLight, normals, l, color);
+
+            draw(nVerticesInPolygon, graphicsContext, resultPoints, zCoordinates, textureResultPoints, ZBuffer, texture, true, false, true, normals, l, color, width, height);
         }
     }
 
@@ -87,7 +88,9 @@ public class RenderEngine {
                              boolean useLight,
                              ArrayList<Vector3f> normals,
                              Vector3f ray,
-                             Color color) {
+                             Color color,
+                             int width,
+                             int height) {
         for (int vertexInPolygonInd = 1; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
             if (drawLines) {
                 Rasterization.drawLine(graphicsContext.getPixelWriter(),
@@ -97,7 +100,9 @@ public class RenderEngine {
                         (int) resultPoints.get(vertexInPolygonInd).x,
                         (int) resultPoints.get(vertexInPolygonInd).y,
                         zCoordinates.get(vertexInPolygonInd),
-                        ZBuffer);
+                        ZBuffer,
+                        width,
+                        height);
             }
             if (vertexInPolygonInd >= 2) {
                 Rasterization.drawTriangle(graphicsContext.getPixelWriter(),

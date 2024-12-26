@@ -23,6 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.vecmath.Vector3f;
 
@@ -45,19 +48,41 @@ public class GuiController {
     private Model mesh = null;
     private BufferedImage texture;
 
+    private List<Camera> cameras = List.of(
+            new Camera(
+                    new Vector3f(0, 0, 100),
+                    new Vector3f(0, 0, 0),
+                    1.0F, 1, 0.01F, 100),
+            new Camera(
+                    new Vector3f(0, 0, 10),
+                    new Vector3f(0, 0, 0),
+                    1.0F, 1, 0.01F, 100),
 
+            new Camera(
+                    new Vector3f(10, 10, 10),
+                    new Vector3f(0, 0, 0),
+                    1.0F, 1, 0.01F, 100)
+    );
     private Camera camera = new Camera(
             new Vector3f(0, 0, 100),
             new Vector3f(0, 0, 0),
             1.0F, 1, 0.01F, 100);
 
     private Timeline timeline;
-
+    //Это через текстовые поля в интерфейсе
+    public void addCamera(Camera camera){
+        this.cameras.add(camera);
+    }
+    //Это тоже чтобы можно было выбрать в интерфейсе
+    public void setCamera(int camera){
+        this.camera = cameras.get(camera);
+    }
     @FXML
     private void initialize() {
         drawLines.bind(drawLinesCheckBox.selectedProperty());
         drawTexture.bind(drawTextureCheckBox.selectedProperty());
         useLight.bind(useLightCheckBox.selectedProperty());
+
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 

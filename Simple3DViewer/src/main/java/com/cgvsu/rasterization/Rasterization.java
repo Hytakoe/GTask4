@@ -33,7 +33,6 @@ public class Rasterization {
         Point2fYThenXComparator compYX = new Point2fYThenXComparator();
         dots.sort(compYX);
 
-
         double function1;
         double function2;
         Point2f vertex1 = dots.get(1);
@@ -165,7 +164,7 @@ public class Rasterization {
         return value;
     }
 
-    public static void drawLine(PixelWriter pixelWriter, int x0, int y0, float z0, int x1, int y1, float z1, Double[][] ZBuffer) {
+    public static void drawLine(PixelWriter pixelWriter, int x0, int y0, float z0, int x1, int y1, float z1, Double[][] ZBuffer, int width, int height) {
         int x = x0;
         int y = y0;
         int deltax = Math.abs(x1 - x0);
@@ -174,15 +173,17 @@ public class Rasterization {
         int sy = (y0 < y1) ? 1 : -1;
         int error = deltax - deltay;
         while (true) {
-            double alpha = Math.pow((Math.pow(x - x0, 2) + Math.pow(y - y0, 2)), 0.5);
-            double beta = Math.pow((Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2)), 0.5);
-            double denominator = 1 / (alpha + beta);
-            alpha *= denominator;
-            beta *= denominator;
-            double z = beta * z0 + alpha * z1;
-            if (ZBuffer[x0][y0] > z) {
-                pixelWriter.setColor(x0, y0, Color.BLACK);
-                ZBuffer[x0][y0] = z;
+            if (x0 >= 0 && x0 < width && y0 >= 0 && y0 < height) {
+                double alpha = Math.pow((Math.pow(x - x0, 2) + Math.pow(y - y0, 2)), 0.5);
+                double beta = Math.pow((Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2)), 0.5);
+                double denominator = 1 / (alpha + beta);
+                alpha *= denominator;
+                beta *= denominator;
+                double z = beta * z0 + alpha * z1;
+                if (ZBuffer[x0][y0] > z) {
+                    pixelWriter.setColor(x0, y0, Color.BLACK);
+                    ZBuffer[x0][y0] = z;
+                }
             }
 
             if (x0 == x1 && y0 == y1) break;
