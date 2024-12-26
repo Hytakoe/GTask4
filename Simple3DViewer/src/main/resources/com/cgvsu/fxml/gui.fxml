@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.GuiController">
-    <MenuBar prefHeight="25.0" prefWidth="323.0">
+    <MenuBar prefHeight="25.0" prefWidth="165.0">
         <Menu mnemonicParsing="false" text="File">
          <MenuItem mnemonicParsing="false" onAction="#onSaveModelMenuItemClick" text="Download Model">
             <accelerator>
@@ -18,7 +18,7 @@
                 <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
             </accelerator>
             </MenuItem>
-         <MenuItem mnemonicParsing="false" onAction="#onLoadTextureMenuItemClick" text="Upload texture">
+         <MenuItem mnemonicParsing="false" onAction="#onLoadTextureMenuItemClick" text="Load texture">
             <accelerator>
                <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
             </accelerator>
@@ -59,4 +59,14 @@
     </MenuBar>
 
     <Canvas fx:id="canvas" height="870" width="1600" AnchorPane.topAnchor="30.0" />
+   <Pane layoutX="437.0" layoutY="132.0" prefHeight="200.0" prefWidth="274.0">
+       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+            <children>
+               <CheckBox fx:id="drawLinesCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="DrawLines" />
+               <CheckBox fx:id="drawTextureCheckBox" layoutX="13.0" layoutY="40.0" mnemonicParsing="false" text="DrawTexture" />
+               <CheckBox fx:id="useLightCheckBox" layoutX="14.0" layoutY="67.0" mnemonicParsing="false" text="UseLight" />
+               <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="94.0" />
+            </children>
+         </AnchorPane>
+   </Pane>
 </AnchorPane>

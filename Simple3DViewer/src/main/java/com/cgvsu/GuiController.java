@@ -3,6 +3,8 @@ package com.cgvsu;
 import com.cgvsu.model.Triangulator;
 import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -10,10 +12,12 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,7 +31,9 @@ import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
 
 public class GuiController {
-
+    private final BooleanProperty drawLines = new SimpleBooleanProperty(false);
+    private final BooleanProperty drawTexture = new SimpleBooleanProperty(false);
+    private final BooleanProperty useLight = new SimpleBooleanProperty(false);
     final private float TRANSLATION = 0.5F;
 
     @FXML
@@ -49,6 +55,9 @@ public class GuiController {
 
     @FXML
     private void initialize() {
+        drawLines.bind(drawLinesCheckBox.selectedProperty());
+        drawTexture.bind(drawTextureCheckBox.selectedProperty());
+        useLight.bind(useLightCheckBox.selectedProperty());
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
@@ -66,7 +75,16 @@ public class GuiController {
                 Triangulator.triangulateModel(mesh);
                 mesh.calculateVertexNormals();
                 try {
-                    RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height, texture);
+                    RenderEngine.render(canvas.getGraphicsContext2D(),
+                            camera,
+                            mesh,
+                            (int) width,
+                            (int) height,
+                            texture,
+                            drawLines.get(),
+                            drawTexture.get(),
+                            useLight.get(),
+                            colorPicker.getValue());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -186,4 +204,16 @@ public class GuiController {
     public void handleCameraDown(ActionEvent actionEvent) {
         camera.movePosition(new Vector3f(0, -TRANSLATION, 0));
     }
+
+    @FXML
+    private CheckBox drawLinesCheckBox;
+
+    @FXML
+    private CheckBox drawTextureCheckBox;
+
+    @FXML
+    private CheckBox useLightCheckBox;
+
+    @FXML
+    private ColorPicker colorPicker;
 }

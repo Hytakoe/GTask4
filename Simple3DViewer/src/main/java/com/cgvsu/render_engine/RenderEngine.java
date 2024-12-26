@@ -27,7 +27,11 @@ public class RenderEngine {
             final Model mesh,
             final int width,
             final int height,
-            BufferedImage texture) throws IOException {
+            BufferedImage texture,
+            boolean drawLines,
+            boolean drawTexture,
+            boolean useLight,
+            Color color) throws IOException {
         Matrix4f modelMatrix = rotateScaleTranslate();
         Matrix4f viewMatrix = camera.getViewMatrix();
         Matrix4f projectionMatrix = camera.getProjectionMatrix();
@@ -70,7 +74,7 @@ public class RenderEngine {
                 resultPoints.add(resultPoint);
                 textureResultPoints.add(texturePoint);
             }
-            draw(nVerticesInPolygon, graphicsContext, resultPoints, zCoordinates, textureResultPoints, ZBuffer, texture, false, true, true, normals, l);
+            draw(nVerticesInPolygon, graphicsContext, resultPoints, zCoordinates, textureResultPoints, ZBuffer, texture, drawLines, drawTexture, useLight, normals, l, color);
         }
     }
 
@@ -82,7 +86,8 @@ public class RenderEngine {
                              boolean drawTexture,
                              boolean useLight,
                              ArrayList<Vector3f> normals,
-                             Vector3f ray) {
+                             Vector3f ray,
+                             Color color) {
         for (int vertexInPolygonInd = 1; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
             if (drawLines) {
                 Rasterization.drawLine(graphicsContext.getPixelWriter(),
@@ -111,7 +116,7 @@ public class RenderEngine {
                         (int) textureResultPoints.get(vertexInPolygonInd - 1).y,
                         (int) textureResultPoints.get(vertexInPolygonInd).x,
                         (int) textureResultPoints.get(vertexInPolygonInd).y,
-                        Color.RED,
+                        color,
                         ZBuffer,
                         texture,
                         drawTexture,
