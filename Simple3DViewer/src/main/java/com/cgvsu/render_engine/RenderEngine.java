@@ -46,10 +46,10 @@ public class RenderEngine {
         Matrix4f modelViewProjectionMatrix = new Matrix4f(modelMatrix);
         modelViewProjectionMatrix.mul(viewMatrix);
         modelViewProjectionMatrix.mul(projectionMatrix);
-        Double[][] ZBuffer = new Double[width][height];
+        Float[][] ZBuffer = new Float[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                ZBuffer[x][y] = 9999.0;
+                ZBuffer[x][y] = 9999.0f;
             }
         }
         final int nPolygons = mesh.polygons.size();
@@ -68,7 +68,7 @@ public class RenderEngine {
                 javax.vecmath.Vector3f vertexVecmath = new javax.vecmath.Vector3f((float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ());
 
                 Point2f resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
-                Point2f texturePoint = new Point2f((float) textureVertex.getX() * textureWidth, (float) textureVertex.getY() * textureHeight);
+                Point2f texturePoint = new Point2f(textureVertex.getX() * textureWidth, textureVertex.getY() * textureHeight);
                 vertexVecmath = multiplyMatrix4ByVector3(viewMatrix, vertexVecmath);
                 zCoordinates.add(vertexVecmath.z);
                 resultPoints.add(resultPoint);
@@ -81,7 +81,7 @@ public class RenderEngine {
 
     private static void draw(int nVerticesInPolygon, GraphicsContext graphicsContext
             , ArrayList<Point2f> resultPoints, ArrayList<Float> zCoordinates,
-                             ArrayList<Point2f> textureResultPoints, Double[][] ZBuffer,
+                             ArrayList<Point2f> textureResultPoints, Float[][] ZBuffer,
                              BufferedImage texture,
                              boolean drawLines,
                              boolean drawTexture,

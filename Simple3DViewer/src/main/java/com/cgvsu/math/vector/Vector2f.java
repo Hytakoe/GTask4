@@ -1,16 +1,16 @@
 package com.cgvsu.math.vector;
 
 public class Vector2f {
-    private static final double eps = 1e-4f;
-    private double x;
-    private double y;
+    private static final float eps = 1e-4f;
+    private float x;
+    private float y;
 
-    public Vector2f(double x, double y) {
+    public Vector2f(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public double get(int index) {
+    public float get(int index) {
         switch (index) {
             case 0:
                 return x;
@@ -20,11 +20,11 @@ public class Vector2f {
         throw new IllegalArgumentException();
     }
 
-    public double getX() {
+    public float getX() {
         return x;
     }
 
-    public double getY() {
+    public float getY() {
         return y;
     }
 
@@ -36,23 +36,23 @@ public class Vector2f {
         return new Vector2f(x - other.getX(), y - other.getY());
     }
 
-    public Vector2f multiplyScalar(double scalar) {
+    public Vector2f multiplyScalar(float scalar) {
         return new Vector2f(x * scalar, y * scalar);
     }
 
-    public Vector2f divScalar(double scalar) {
+    public Vector2f divScalar(float scalar) {
         if (Math.abs(scalar) < eps) {
             throw new ArithmeticException("Делить на 0 нельзя");
         }
         return new Vector2f(x / scalar, y / scalar);
     }
 
-    public double getLength() {
-        return (double) Math.sqrt(x * x + y * y);
+    public float getLength() {
+        return (float) Math.sqrt(x * x + y * y);
     }
 
     public Vector2f normalize() {
-        double length = getLength();
+        float length = getLength();
         if (Math.abs(length) > eps) {
             return new Vector2f(x / length, y / length);
         } else {
@@ -60,7 +60,7 @@ public class Vector2f {
         }
     }
 
-    public double dotProduct(Vector2f v) {
+    public float dotProduct(Vector2f v) {
         return this.x * v.getX() + this.y * v.getY();
     }
 

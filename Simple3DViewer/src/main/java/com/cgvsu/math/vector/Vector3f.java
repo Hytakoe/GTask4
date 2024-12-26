@@ -4,11 +4,11 @@ import com.cgvsu.math.Global;
 import com.cgvsu.math.matrix.Matrix4f;
 
 public class Vector3f {
-    private double x;
-    private double y;
-    private double z;
+    private float x;
+    private float y;
+    private float z;
 
-    public Vector3f(double x, double y, double z) {
+    public Vector3f(float x, float y, float z) {
         if (x == -0.0) {
             x = 0;
         }
@@ -29,7 +29,7 @@ public class Vector3f {
         this.z = 0;
     }
 
-    public double get(int index) {
+    public float get(int index) {
         switch (index) {
             case 0:
                 return x;
@@ -41,15 +41,15 @@ public class Vector3f {
         throw new IllegalArgumentException("index out of bounds");
     }
 
-    public double getX() {
+    public float getX() {
         return x;
     }
 
-    public double getY() {
+    public float getY() {
         return y;
     }
 
-    public double getZ() {
+    public float getZ() {
         return z;
     }
 
@@ -67,11 +67,11 @@ public class Vector3f {
         return new Vector3f(x - v.getX(), y - v.getY(), z - v.getZ());
     }
 
-    public Vector3f multiplyScalar(double a) {
+    public Vector3f multiplyScalar(float a) {
         return new Vector3f(x * a, y * a, z * a);
     }
 
-    public Vector3f divScalar(double a) {
+    public Vector3f divScalar(float a) {
         if (Math.abs(a) < Global.eps) {
             throw new ArithmeticException("Division by zero");
         } else {
@@ -79,12 +79,12 @@ public class Vector3f {
         }
     }
 
-    public double getLength() {
-        return (double) Math.sqrt(x * x + y * y + z * z);
+    public float getLength() {
+        return (float) Math.sqrt(x * x + y * y + z * z);
     }
 
     public Vector3f normalize() {
-        double l = getLength();
+        float l = getLength();
         if (Math.abs(l) > Global.eps) {
             return new Vector3f(x / l, y / l, z / l);
         } else {
@@ -105,14 +105,14 @@ public class Vector3f {
         v.y /= magnitude;
         v.z /= magnitude;
     }
-    public double dotProduct(Vector3f v) {
+    public float dotProduct(Vector3f v) {
         return this.x * v.getX() + this.y * v.getY() + this.z * v.getZ();
     }
 
     public Vector3f vectorMultiply(Vector3f v) {
-        double newX = this.y * v.getZ() - this.z * v.getY();
-        double newY = this.z * v.getX() - this.x * v.getZ();
-        double newZ = this.x * v.getY() - this.y * v.getX();
+        float newX = this.y * v.getZ() - this.z * v.getY();
+        float newY = this.z * v.getX() - this.x * v.getZ();
+        float newZ = this.x * v.getY() - this.y * v.getX();
         return new Vector3f(newX, newY, newZ);
     }
 
@@ -144,13 +144,13 @@ public class Vector3f {
     }
 
     public static Vector3f multiplyMatrix4ByVector3(Matrix4f matrix, Vector3f vertex) {
-        double x = matrix.getCell(0, 0) * vertex.getX() + matrix.getCell(0, 1) * vertex.getY()
+        float x = matrix.getCell(0, 0) * vertex.getX() + matrix.getCell(0, 1) * vertex.getY()
                 + matrix.getCell(0, 2) * vertex.getZ() + matrix.getCell(0, 3);
-        double y = matrix.getCell(1, 0) * vertex.getX() + matrix.getCell(1, 1) * vertex.getY()
+        float y = matrix.getCell(1, 0) * vertex.getX() + matrix.getCell(1, 1) * vertex.getY()
                 + matrix.getCell(1, 2) * vertex.getZ() + matrix.getCell(1, 3);
-        double z = matrix.getCell(2, 0) * vertex.getX() + matrix.getCell(2, 1) * vertex.getY()
+        float z = matrix.getCell(2, 0) * vertex.getX() + matrix.getCell(2, 1) * vertex.getY()
                 + matrix.getCell(2, 2) * vertex.getZ() + matrix.getCell(2, 3);
-        double w = matrix.getCell(3, 0) * vertex.getX() + matrix.getCell(3, 1) * vertex.getY()
+        float w = matrix.getCell(3, 0) * vertex.getX() + matrix.getCell(3, 1) * vertex.getY()
                 + matrix.getCell(3, 2) * vertex.getZ() + matrix.getCell(3, 3);
 
         // Деление на W для преобразования в нормализованное устройство
@@ -183,15 +183,15 @@ public class Vector3f {
         return new Vector3f(x / scalar, y / scalar, z / scalar);
     }
 
-    public void setX(double d) {
+    public void setX(float d) {
         this.x = d;
     }
 
-    public void setY(double d) {
+    public void setY(float d) {
         this.y = d;
     }
 
-    public void setZ(double d) {
+    public void setZ(float d) {
         this.z = d;
     }
 }
