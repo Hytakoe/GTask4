@@ -11,8 +11,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -115,7 +116,7 @@ public class GuiController {
                 }
             }
         });
-
+        deleteModelButton.setOnAction(this::handleDeleteModelButtonClick);
         timeline.getKeyFrames().add(frame);
         timeline.play();
     }
@@ -163,11 +164,13 @@ public class GuiController {
 
         // Получаем путь к выбранному файлу
         Path filePath = Path.of(file.getAbsolutePath());
-
+        Alert alert = new Alert(Alert.AlertType.NONE);
         try {
             String modelData = ObjWriter.write(mesh);
             Files.write(filePath, modelData.getBytes()); // Записываем данные в файл
-            System.out.println("Модель успешно сохранена в файл: " + filePath);
+            alert.setAlertType(Alert.AlertType.INFORMATION);
+            alert.setContentText("Модель успешно сохранена в файл: " + filePath);
+            alert.show();
         } catch (IOException exception) {
             // Обработка ошибок записи файла
             exception.printStackTrace();
@@ -192,9 +195,12 @@ public class GuiController {
         if (file == null) {
             return;
         }
+        Alert alert = new Alert(Alert.AlertType.NONE);
         try {
             texture = ImageIO.read(file);
-            System.out.println("Текстура успешно загружена: " + file.getAbsolutePath());
+            alert.setAlertType(Alert.AlertType.INFORMATION);
+            alert.setContentText("Текстура успешно загружена");
+            alert.show();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -241,4 +247,15 @@ public class GuiController {
 
     @FXML
     private ColorPicker colorPicker;
+    @FXML
+    private Button deleteModelButton;
+    @FXML
+    private void handleDeleteModelButtonClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        mesh = null; // Очищаем модель
+        texture = null; // Очищаем текстуру
+        alert.setAlertType(Alert.AlertType.INFORMATION);
+        alert.setContentText("Модель и текстура удалены.");
+        alert.show();
+    }
 }
