@@ -79,31 +79,17 @@ public class Vector3f {
         }
     }
 
+    // Возвращает величину (длину) вектора
     public float getLength() {
         return (float) Math.sqrt(x * x + y * y + z * z);
     }
 
-    public Vector3f normalize() {
-        float l = getLength();
-        if (Math.abs(l) > Global.eps) {
-            return new Vector3f(x / l, y / l, z / l);
-        } else {
-            throw new IllegalArgumentException("Division by zero or near-zero value");
-        }
-    }
-    // Возвращает величину (длину) вектора
-    public float magnitude(Vector3f v) {
-        return (float) Math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
-    }
-    public float magnitude() {
-        return (float) Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
-    }
     // Возвращает нормализованный вектор (с длиной 1)
-    public void normalize(Vector3f v) {
-        float magnitude = magnitude(v);
-        v.x /= magnitude;
-        v.y /= magnitude;
-        v.z /= magnitude;
+    public void normalize() {
+        float magnitude = this.getLength();
+        this.x /= magnitude;
+        this.y /= magnitude;
+        this.z /= magnitude;
     }
     public float dotProduct(Vector3f v) {
         return this.x * v.getX() + this.y * v.getY() + this.z * v.getZ();
@@ -120,14 +106,8 @@ public class Vector3f {
         return new Vector4f(getX(), getY(), getZ(), 1);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Vector3f other))
-            return false;
-        return Math.abs(x - other.x) < Global.eps && Math.abs(y - other.y) < Global.eps
-                && Math.abs(z - other.z) < Global.eps;
+    public boolean equals(Vector3f other) {
+        return Math.abs(x - other.x) < Global.eps && Math.abs(y - other.y) < Global.eps && Math.abs(z - other.z) < Global.eps;
     }
 
     @Override
@@ -157,25 +137,25 @@ public class Vector3f {
         return new Vector3f(x / w, y / w, z / w);
     }
     // Возвращает вектор, перпендикулярный двум переданным (векторное произведение)
-    public Vector3f cross(Vector3f v1, Vector3f v2) {
-        float vNormalX = (float) ((v1.y * v2.z) - (v1.z * v2.y));
-        float vNormalY = (float) ((v1.z * v2.x) - (v1.x * v2.z));
-        float vNormalZ = (float) ((v1.x * v2.y) - (v1.y * v2.x));
+    public static Vector3f cross(Vector3f v1, Vector3f v2) {
+        float vNormalX = ((v1.y * v2.z) - (v1.z * v2.y));
+        float vNormalY = ((v1.z * v2.x) - (v1.x * v2.z));
+        float vNormalZ = ((v1.x * v2.y) - (v1.y * v2.x));
         return new Vector3f(vNormalX, vNormalY, vNormalZ);
     }
     // Возвращает вектор между 2мя точками
-    public Vector3f vector(Vector3f point1, Vector3f point2) {
-        float vectorX = (float) (point1.x - point2.x);
-        float vectorY = (float) (point1.y - point2.y);
-        float vectorZ = (float) (point1.z - point2.z);
+    public static Vector3f vector(Vector3f point1, Vector3f point2) {
+        float vectorX = (point1.x - point2.x);
+        float vectorY = (point1.y - point2.y);
+        float vectorZ = (point1.z - point2.z);
         return new Vector3f(vectorX, vectorY, vectorZ);
     }
-    public Vector3f normalPolygon(Vector3f v0, Vector3f v1, Vector3f v2) {
+    public static Vector3f normalPolygon(Vector3f v0, Vector3f v1, Vector3f v2) {
         Vector3f newV1 = vector(v1, v0);
         Vector3f newV2 = vector(v2, v0);
 
         Vector3f vNormal = cross(newV1, newV2);
-        normalize(vNormal);
+        vNormal.normalize();
         return vNormal;
     }
     // Деление вектора на скаляр

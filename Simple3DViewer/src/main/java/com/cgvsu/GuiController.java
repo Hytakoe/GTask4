@@ -1,5 +1,6 @@
 package com.cgvsu;
 
+import com.cgvsu.model.NormalsCalculation;
 import com.cgvsu.model.Triangulator;
 import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
@@ -98,7 +99,7 @@ public class GuiController {
 
             if (mesh != null) {
                 Triangulator.triangulateModel(mesh);
-                mesh.calculateVertexNormals();
+                NormalsCalculation.calculateVertexNormals(mesh);
                 try {
                     RenderEngine.render(canvas.getGraphicsContext2D(),
                             camera,

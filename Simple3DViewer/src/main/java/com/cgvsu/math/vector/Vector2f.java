@@ -51,13 +51,10 @@ public class Vector2f {
         return (float) Math.sqrt(x * x + y * y);
     }
 
-    public Vector2f normalize() {
-        float length = getLength();
-        if (Math.abs(length) > eps) {
-            return new Vector2f(x / length, y / length);
-        } else {
-            throw new IllegalArgumentException("Делить на 0 нельзя");
-        }
+    public void normalize() {
+        float magnitude = this.getLength();
+        this.x /= magnitude;
+        this.y /= magnitude;
     }
 
     public float dotProduct(Vector2f v) {
@@ -69,12 +66,7 @@ public class Vector2f {
         return "Vector2f{" + "x=" + x + ", y=" + y + '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Vector2f other))
-            return false;
+    public boolean equals(Vector2f other) {
         return Math.abs(x - other.x) < eps && Math.abs(y - other.y) < eps;
     }
 }

@@ -1,5 +1,7 @@
 package com.cgvsu.math.vector;
 
+import com.cgvsu.math.Global;
+
 public class Vector4f {
     private static final float eps = 1e-4f;
     public float x;
@@ -44,12 +46,8 @@ public class Vector4f {
         return w;
     }
 
-    public Vector4f sum(Vector4f v) {
-        float a = x + v.getX();
-        float b = y + v.getY();
-        float c = z + v.getZ();
-        float d = w + v.getW();
-        return new Vector4f(a, b, c, d);
+    public Vector4f add(Vector4f v) {
+        return new Vector4f(x + v.getX(), y + v.getY(), z + v.getZ(), w + v.getW());
     }
 
     public Vector4f sub(Vector4f v) {
@@ -60,7 +58,7 @@ public class Vector4f {
         return new Vector4f(x * scalar, y * scalar, z * scalar, w * scalar);
     }
 
-    public Vector4f diveScalar(float scalar) {
+    public Vector4f divScalar(float scalar) {
         if (Math.abs(scalar) < eps) {
             throw new ArithmeticException();
         } else {
@@ -72,13 +70,12 @@ public class Vector4f {
         return (float) Math.sqrt(x * x + y * y + z * z + w * w);
     }
 
-    public Vector4f normalize() {
-        float len = getLength();
-        if (Math.abs(len) > eps) {
-            return new Vector4f(x / len, y / len, z / len, w / len);
-        } else {
-            throw new ArithmeticException();
-        }
+    public void normalize() {
+        float magnitude = this.getLength();
+        this.x /= magnitude;
+        this.y /= magnitude;
+        this.z /= magnitude;
+        this.w /= magnitude;
     }
 
     public float dotProduct(Vector4f v) {
@@ -94,10 +91,8 @@ public class Vector4f {
         return "Vector4f{" + "x=" + x + ", y=" + y + ", z=" + z + ", w=" + w + '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vector4f other)) return false;
-        return Math.abs(x - other.x) < eps && Math.abs(y - other.y) < eps && Math.abs(z - other.z) < eps && Math.abs(w - other.w) < eps;
+    public boolean equals(Vector4f other) {
+        return Math.abs(x - other.x) < Global.eps && Math.abs(y - other.y) < Global.eps &&
+                Math.abs(z - other.z) < Global.eps && Math.abs(w - other.w) < Global.eps;
     }
 }
