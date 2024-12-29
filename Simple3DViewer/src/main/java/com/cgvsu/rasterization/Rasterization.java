@@ -1,10 +1,11 @@
 package com.cgvsu.rasterization;
 
+
+import com.cgvsu.math.point.Point2f;
 import com.cgvsu.math.vector.Vector3f;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
-import javax.vecmath.Point2f;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
@@ -38,7 +39,7 @@ public class Rasterization {
         Point2f vertex1 = dots.get(1);
         Point2f vertex2 = dots.get(2);
 
-        //Рассчёт функций верхней половины
+        //Расчёт функций верхней половины
         if (dots.get(0).y - vertex2.y != 0) {
             function1 = ((dots.get(0).x - vertex2.x) / (dots.get(0).y - vertex2.y));
         } else {
@@ -54,7 +55,7 @@ public class Rasterization {
             drawHalfOfTriangle(function1, function2, vertex1, vertex2, d0, d1, d2, texture, ZBuffer, pixelWriter, row, z0, z1, z2, tx0, ty0, tx1, ty1, tx2, ty2, useTexture, useLight, color, n0, n1, n2, ray);
         }
 
-        //Рассчёт функций нижней половины
+        //Расчёт функций нижней половины
         if (vertex2.y >= vertex1.y) {
             if (dots.get(2).y - vertex1.y != 0) {
                 function2 = (dots.get(2).x - vertex1.x) / (dots.get(2).y - vertex1.y);

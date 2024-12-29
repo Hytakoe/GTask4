@@ -4,10 +4,10 @@ import com.cgvsu.math.Global;
 
 public class Vector4f {
     private static final float eps = 1e-4f;
-    public float x;
-    public float y;
-    public float z;
-    public float w;
+    private float x;
+    private float y;
+    private float z;
+    private float w;
 
     public Vector4f(float x, float y, float z, float w) {
         this.x = x;

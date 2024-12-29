@@ -53,8 +53,10 @@ public class Vector3f {
         return z;
     }
 
-    public Vector3f add(Vector3f v) {
-        return new Vector3f(x + v.getX(), y + v.getY(), z + v.getZ());
+    public void add(Vector3f v) {
+        this.x += v.getX();
+        this.y += v.getY();
+        this.z += v.getZ();
     }
 
     public void addVectorThis(Vector3f v) {
@@ -63,8 +65,10 @@ public class Vector3f {
         this.z += v.getZ();
     }
 
-    public Vector3f sub(Vector3f v) {
-        return new Vector3f(x - v.getX(), y - v.getY(), z - v.getZ());
+    public void sub(Vector3f v1, Vector3f v2) {
+        x = v1.getX() - v2.getX();
+        y = v1.getY() - v2.getY();
+        z = v1.getZ() - v2.getZ();
     }
 
     public Vector3f multiplyScalar(float a) {
@@ -91,7 +95,9 @@ public class Vector3f {
         this.y /= magnitude;
         this.z /= magnitude;
     }
-    public float dotProduct(Vector3f v) {
+
+    // скалярное произведение векторов
+    public float dot(Vector3f v) {
         return this.x * v.getX() + this.y * v.getY() + this.z * v.getZ();
     }
 
@@ -118,11 +124,6 @@ public class Vector3f {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "(" + x + ", " + y + ", " + z + ")";
-    }
-
     public static Vector3f multiplyMatrix4ByVector3(Matrix4f matrix, Vector3f vertex) {
         float x = matrix.getCell(0, 0) * vertex.getX() + matrix.getCell(0, 1) * vertex.getY()
                 + matrix.getCell(0, 2) * vertex.getZ() + matrix.getCell(0, 3);
@@ -137,12 +138,19 @@ public class Vector3f {
         return new Vector3f(x / w, y / w, z / w);
     }
     // Возвращает вектор, перпендикулярный двум переданным (векторное произведение)
-    public static Vector3f cross(Vector3f v1, Vector3f v2) {
+    /*public static Vector3f cross(Vector3f v1, Vector3f v2) {
         float vNormalX = ((v1.y * v2.z) - (v1.z * v2.y));
         float vNormalY = ((v1.z * v2.x) - (v1.x * v2.z));
         float vNormalZ = ((v1.x * v2.y) - (v1.y * v2.x));
         return new Vector3f(vNormalX, vNormalY, vNormalZ);
+    }*/
+
+    public void cross(Vector3f v1, Vector3f v2) {
+        this.x = ((v1.y * v2.z) - (v1.z * v2.y));
+        this.y = ((v1.z * v2.x) - (v1.x * v2.z));
+        this.z = ((v1.x * v2.y) - (v1.y * v2.x));
     }
+
     // Возвращает вектор между 2мя точками
     public static Vector3f vector(Vector3f point1, Vector3f point2) {
         float vectorX = (point1.x - point2.x);
@@ -154,13 +162,19 @@ public class Vector3f {
         Vector3f newV1 = vector(v1, v0);
         Vector3f newV2 = vector(v2, v0);
 
-        Vector3f vNormal = cross(newV1, newV2);
+        Vector3f vNormal = new Vector3f();
+        vNormal.cross(newV1, newV2);
         vNormal.normalize();
         return vNormal;
     }
     // Деление вектора на скаляр
     public Vector3f divide(float scalar) {
         return new Vector3f(x / scalar, y / scalar, z / scalar);
+    }
+
+    @Override
+    public String toString() {
+        return "Vector3f{" + "x=" + x + ", y=" + y + ", z=" + z + '}';
     }
 
     public void setX(float d) {

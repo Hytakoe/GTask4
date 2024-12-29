@@ -29,7 +29,8 @@ public class NormalsCalculation {
         int[] polygonsToVertexCount = new int[model.vertices.size()];
         for (Polygon polygon : model.polygons) {
             for (int vertexIndex : polygon.getVertexIndices()) {
-                model.normals.set(vertexIndex, model.normals.get(vertexIndex).add(polygon.getNormal()));
+                model.normals.get(vertexIndex).add(polygon.getNormal());
+                model.normals.set(vertexIndex, model.normals.get(vertexIndex));
                 polygonsToVertexCount[vertexIndex]++;
             }
         }
