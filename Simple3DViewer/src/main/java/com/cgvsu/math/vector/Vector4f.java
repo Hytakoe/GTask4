@@ -1,20 +1,22 @@
 package com.cgvsu.math.vector;
 
-public class Vector4f {
-    private static final double eps = 1e-4f;
-    public double x;
-    public double y;
-    public double z;
-    public double w;
+import com.cgvsu.math.Global;
 
-    public Vector4f(double x, double y, double z, double w) {
+public class Vector4f {
+    private static final float eps = 1e-4f;
+    private float x;
+    private float y;
+    private float z;
+    private float w;
+
+    public Vector4f(float x, float y, float z, float w) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
     }
 
-    public double get(int index) {
+    public float get(int index) {
         switch (index) {
             case 0:
                 return x;
@@ -28,39 +30,35 @@ public class Vector4f {
         throw new IllegalArgumentException("index out of range");
     }
 
-    public double getX() {
+    public float getX() {
         return x;
     }
 
-    public double getY() {
+    public float getY() {
         return y;
     }
 
-    public double getZ() {
+    public float getZ() {
         return z;
     }
 
-    public double getW() {
+    public float getW() {
         return w;
     }
 
-    public Vector4f sum(Vector4f v) {
-        double a = x + v.getX();
-        double b = y + v.getY();
-        double c = z + v.getZ();
-        double d = w + v.getW();
-        return new Vector4f(a, b, c, d);
+    public Vector4f add(Vector4f v) {
+        return new Vector4f(x + v.getX(), y + v.getY(), z + v.getZ(), w + v.getW());
     }
 
     public Vector4f sub(Vector4f v) {
         return new Vector4f(x - v.getX(), y - v.getY(), z - v.getZ(), w - v.getW());
     }
 
-    public Vector4f multiplyScalar(double scalar) {
+    public Vector4f multiplyScalar(float scalar) {
         return new Vector4f(x * scalar, y * scalar, z * scalar, w * scalar);
     }
 
-    public Vector4f diveScalar(double scalar) {
+    public Vector4f divScalar(float scalar) {
         if (Math.abs(scalar) < eps) {
             throw new ArithmeticException();
         } else {
@@ -68,20 +66,19 @@ public class Vector4f {
         }
     }
 
-    public double getLength() {
-        return (double) Math.sqrt(x * x + y * y + z * z + w * w);
+    public float getLength() {
+        return (float) Math.sqrt(x * x + y * y + z * z + w * w);
     }
 
-    public Vector4f normalize() {
-        double len = getLength();
-        if (Math.abs(len) > eps) {
-            return new Vector4f(x / len, y / len, z / len, w / len);
-        } else {
-            throw new ArithmeticException();
-        }
+    public void normalize() {
+        float magnitude = this.getLength();
+        this.x /= magnitude;
+        this.y /= magnitude;
+        this.z /= magnitude;
+        this.w /= magnitude;
     }
 
-    public double dotProduct(Vector4f v) {
+    public float dotProduct(Vector4f v) {
         return this.x * v.getX() + this.y * getY() + this.z * v.getZ() + this.w * v.getW();
     }
 
@@ -94,10 +91,8 @@ public class Vector4f {
         return "Vector4f{" + "x=" + x + ", y=" + y + ", z=" + z + ", w=" + w + '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vector4f other)) return false;
-        return Math.abs(x - other.x) < eps && Math.abs(y - other.y) < eps && Math.abs(z - other.z) < eps && Math.abs(w - other.w) < eps;
+    public boolean equals(Vector4f other) {
+        return Math.abs(x - other.x) < Global.eps && Math.abs(y - other.y) < Global.eps &&
+                Math.abs(z - other.z) < Global.eps && Math.abs(w - other.w) < Global.eps;
     }
 }

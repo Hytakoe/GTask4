@@ -11,8 +11,8 @@ import com.cgvsu.math.vector.Vector3f;
 import com.cgvsu.rasterization.Rasterization;
 import javafx.scene.canvas.GraphicsContext;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point2f;
+import com.cgvsu.math.point.Point2f;
+import com.cgvsu.math.matrix.Matrix4f;
 
 import com.cgvsu.model.Model;
 import javafx.scene.paint.Color;
@@ -44,8 +44,8 @@ public class RenderEngine {
             textureHeight = texture.getHeight();
         }
         Matrix4f modelViewProjectionMatrix = new Matrix4f(modelMatrix);
-        modelViewProjectionMatrix.mul(viewMatrix);
-        modelViewProjectionMatrix.mul(projectionMatrix);
+        modelViewProjectionMatrix = modelViewProjectionMatrix.mulMatrix(viewMatrix);
+        modelViewProjectionMatrix = modelViewProjectionMatrix.mulMatrix(projectionMatrix);
         Float[][] ZBuffer = new Float[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -65,12 +65,12 @@ public class RenderEngine {
                 normals.add(mesh.normals.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd)));
                 Vector2f textureVertex = mesh.textureVertices.get(mesh.polygons.get(polygonInd).getTextureVertexIndices().get(vertexInPolygonInd));
 
-                javax.vecmath.Vector3f vertexVecmath = new javax.vecmath.Vector3f((float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ());
+                Vector3f vertexVecmath = new Vector3f(vertex.getX(), vertex.getY(), vertex.getZ());
 
                 Point2f resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
-                Point2f texturePoint = new Point2f(textureWidth-(float) textureVertex.getX() * textureWidth, (float) ((float) textureHeight-(textureVertex.getY() * textureHeight)));
+                Point2f texturePoint = new Point2f(textureWidth- textureVertex.getX() * textureWidth, ((float) textureHeight-(textureVertex.getY() * textureHeight)));
                 vertexVecmath = multiplyMatrix4ByVector3(viewMatrix, vertexVecmath);
-                zCoordinates.add(vertexVecmath.z);
+                zCoordinates.add(vertexVecmath.getZ());
                 resultPoints.add(resultPoint);
                 textureResultPoints.add(texturePoint);
             }

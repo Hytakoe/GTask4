@@ -5,7 +5,7 @@ import com.cgvsu.math.vector.Vector3f;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
-import javax.vecmath.Point2f;
+import com.cgvsu.math.point.Point2f;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
@@ -248,7 +248,7 @@ public class Rasterization {
                         Vector3f currentN = new Vector3f(coordinates[0] * n0.getX() + coordinates[1] * n1.getX() + coordinates[2] * n2.getX(),
                                 coordinates[0] * n0.getY() + coordinates[1] * n1.getY() + coordinates[2] * n2.getY(),
                                 coordinates[0] * n0.getZ() + coordinates[1] * n1.getZ() + coordinates[2] * n2.getZ());
-                        float l = (float) -(currentN.getX() * ray.getX() + currentN.getY() * ray.getY() + currentN.getZ() * ray.getZ());// currentN.vectorMultiply(ray);
+                        float l = -(currentN.getX() * ray.getX() + currentN.getY() * ray.getY() + currentN.getZ() * ray.getZ());// currentN.vectorMultiply(ray);
                         float k = 0.7F;
                         if (l > 0) {
                             if (l > 1) {

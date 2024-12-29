@@ -71,9 +71,9 @@ public class ObjReader {
 		}
 		try {
 			return new Vector3f(
-					Double.parseDouble(wordsInLineWithoutToken.get(0)),
-					Double.parseDouble(wordsInLineWithoutToken.get(1)),
-					Double.parseDouble(wordsInLineWithoutToken.get(2)));
+					Float.parseFloat(wordsInLineWithoutToken.get(0)),
+					Float.parseFloat(wordsInLineWithoutToken.get(1)),
+					Float.parseFloat(wordsInLineWithoutToken.get(2)));
 		} catch (NumberFormatException e) {
 			throw new ObjReaderException("Failed to parse float value.", lineInd);
 		} catch (IndexOutOfBoundsException e) {
@@ -90,8 +90,8 @@ public class ObjReader {
 		}
 		try {
 			return new Vector2f(
-					Double.parseDouble(wordsInLineWithoutToken.get(0)),
-					Double.parseDouble(wordsInLineWithoutToken.get(1)));
+					Float.parseFloat(wordsInLineWithoutToken.get(0)),
+					Float.parseFloat(wordsInLineWithoutToken.get(1)));
 		} catch (NumberFormatException e) {
 			throw new ObjReaderException("Failed to parse float value.", lineInd);
 		} catch (IndexOutOfBoundsException e) {
@@ -108,9 +108,9 @@ public class ObjReader {
 		}
 		try {
 			return new Vector3f(
-					Double.parseDouble(wordsInLineWithoutToken.get(0)),
-					Double.parseDouble(wordsInLineWithoutToken.get(1)),
-					Double.parseDouble(wordsInLineWithoutToken.get(2)));
+					Float.parseFloat(wordsInLineWithoutToken.get(0)),
+					Float.parseFloat(wordsInLineWithoutToken.get(1)),
+					Float.parseFloat(wordsInLineWithoutToken.get(2)));
 		} catch (NumberFormatException e) {
 			throw new ObjReaderException("Failed to parse float value.", lineInd);
 		} catch (IndexOutOfBoundsException e) {
@@ -204,7 +204,7 @@ public class ObjReader {
 
 		if (modelVertices.size() < 3) {
 			throw new RuntimeException("Model has 2 or fewer vertices."); // в моделе две вершины или меньше
-		} else if (modelPolygons.size() == 0) {
+		} else if (modelPolygons.isEmpty()) {
 			throw new RuntimeException("There is not a single polygon in the model."); // в моделе нет ни одного полигона
 		}
 
@@ -222,7 +222,7 @@ public class ObjReader {
 
 	protected static int checkPolygon(Polygon polygon, int polygonIndex, ArrayList<Vector3f> modelVertices, ArrayList<Vector2f> modelTextureVertices, ArrayList<Vector3f> modelNormals) {
 		int counter = 0;
-		double[][] matrix3f = new double[3][3];
+		float[][] matrix3f = new float[3][3];
 		matrix3f[0][0] = 1; matrix3f[0][1] = 1; matrix3f[0][2] = 1;
 
 		ArrayList<Integer> polygonVertices = polygon.getVertexIndices();
@@ -232,16 +232,16 @@ public class ObjReader {
 
 		ArrayList<Integer> polygonTextureVertices = polygon.getTextureVertexIndices();
 		ArrayList<Integer> polygonNormals = polygon.getNormalIndices();
-		if (polygonVertices.size() != polygonTextureVertices.size() && (polygonTextureVertices.size() != 0)) {
+		if (polygonVertices.size() != polygonTextureVertices.size() && (!polygonTextureVertices.isEmpty())) {
 			throw new RuntimeException("Not all vertices of polygon number " + (polygonIndex + 1) + " have a texture vertex attached to them."); // не ко всем вершинам полигона номер i привязана текстурная вершина
-		} else if (polygonVertices.size() != polygonNormals.size() && (polygonNormals.size() != 0)) {
+		} else if (polygonVertices.size() != polygonNormals.size() && (!polygonNormals.isEmpty())) {
 			throw new RuntimeException("Not all vertices of polygon number " + (polygonIndex + 1) + " have a normals attached to them."); // не ко всем вершинам полигона номер i привяза нормаль
 		}
 
-		if (polygonTextureVertices.size() != 0) {
+		if (!polygonTextureVertices.isEmpty()) {
 			counter+=2;
 		}
-		if (polygonNormals.size() != 0) {
+		if (!polygonNormals.isEmpty()) {
 			counter+=3;
 		}
 

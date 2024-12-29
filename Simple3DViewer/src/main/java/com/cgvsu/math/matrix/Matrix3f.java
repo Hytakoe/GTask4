@@ -100,17 +100,3 @@ public record Matrix3f(float[][] matrix) {
         return new Vector3f(res[0], res[1], res[2]);
     }
 }
-
-/*public static Matrix3f oneMatrix() {
-        float[][] res = new float[3][3];
-        for (int i = 0; i<res.length; i++) {
-            for (int j = 0; j<res.length; j++) {
-                if(i==j){
-                    res[i][j] = 1;
-                }else{
-                    res[i][j] = 0;
-                }
-            }
-        }
-        return new Matrix3f(res);
-    }*/

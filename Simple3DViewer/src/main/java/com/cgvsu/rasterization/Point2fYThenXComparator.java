@@ -1,6 +1,6 @@
 package com.cgvsu.rasterization;
 
-import javax.vecmath.Point2f;
+import com.cgvsu.math.point.Point2f;
 import java.util.Comparator;
 
 public class Point2fYThenXComparator implements Comparator<Point2f> {

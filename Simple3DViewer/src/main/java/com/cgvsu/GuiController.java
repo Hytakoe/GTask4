@@ -1,5 +1,6 @@
 package com.cgvsu;
 
+import com.cgvsu.model.NormalsCalculation;
 import com.cgvsu.model.Triangulator;
 import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.vecmath.Vector3f;
+import com.cgvsu.math.vector.Vector3f;
 
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
@@ -99,7 +100,7 @@ public class GuiController {
 
             if (mesh != null) {
                 Triangulator.triangulateModel(mesh);
-                mesh.calculateVertexNormals();
+                NormalsCalculation.calculateVertexNormals(mesh);
                 try {
                     RenderEngine.render(canvas.getGraphicsContext2D(),
                             camera,
