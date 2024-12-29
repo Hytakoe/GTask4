@@ -46,10 +46,10 @@ public class RenderEngine {
         Matrix4f modelViewProjectionMatrix = new Matrix4f(modelMatrix);
         modelViewProjectionMatrix.mul(viewMatrix);
         modelViewProjectionMatrix.mul(projectionMatrix);
-        Double[][] ZBuffer = new Double[width][height];
+        Float[][] ZBuffer = new Float[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                ZBuffer[x][y] = 9999.0;
+                ZBuffer[x][y] = 9999.0F;
             }
         }
         final int nPolygons = mesh.polygons.size();
@@ -68,20 +68,20 @@ public class RenderEngine {
                 javax.vecmath.Vector3f vertexVecmath = new javax.vecmath.Vector3f((float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ());
 
                 Point2f resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
-                Point2f texturePoint = new Point2f((float) textureVertex.getX() * textureWidth, (float) textureVertex.getY() * textureHeight);
+                Point2f texturePoint = new Point2f(textureWidth-(float) textureVertex.getX() * textureWidth, (float) ((float) textureHeight-(textureVertex.getY() * textureHeight)));
                 vertexVecmath = multiplyMatrix4ByVector3(viewMatrix, vertexVecmath);
                 zCoordinates.add(vertexVecmath.z);
                 resultPoints.add(resultPoint);
                 textureResultPoints.add(texturePoint);
             }
 
-            draw(nVerticesInPolygon, graphicsContext, resultPoints, zCoordinates, textureResultPoints, ZBuffer, texture, true, false, true, normals, l, color, width, height);
+            draw(nVerticesInPolygon, graphicsContext, resultPoints, zCoordinates, textureResultPoints, ZBuffer, texture, drawLines, drawTexture, useLight, normals, l, color, width, height);
         }
     }
 
     private static void draw(int nVerticesInPolygon, GraphicsContext graphicsContext
             , ArrayList<Point2f> resultPoints, ArrayList<Float> zCoordinates,
-                             ArrayList<Point2f> textureResultPoints, Double[][] ZBuffer,
+                             ArrayList<Point2f> textureResultPoints, Float[][] ZBuffer,
                              BufferedImage texture,
                              boolean drawLines,
                              boolean drawTexture,
@@ -104,32 +104,35 @@ public class RenderEngine {
                         width,
                         height);
             }
-            if (vertexInPolygonInd >= 2) {
+            if (vertexInPolygonInd == 2) {
+
                 Rasterization.drawTriangle(graphicsContext.getPixelWriter(),
-                        (int) resultPoints.get(vertexInPolygonInd - 2).x,
-                        (int) resultPoints.get(vertexInPolygonInd - 2).y,
-                        zCoordinates.get(vertexInPolygonInd - 2),
-                        (int) resultPoints.get(vertexInPolygonInd - 1).x,
-                        (int) resultPoints.get(vertexInPolygonInd - 1).y,
-                        zCoordinates.get(vertexInPolygonInd - 1),
-                        (int) resultPoints.get(vertexInPolygonInd).x,
-                        (int) resultPoints.get(vertexInPolygonInd).y,
-                        zCoordinates.get(vertexInPolygonInd),
-                        (int) textureResultPoints.get(vertexInPolygonInd - 2).x,
-                        (int) textureResultPoints.get(vertexInPolygonInd - 2).y,
-                        (int) textureResultPoints.get(vertexInPolygonInd - 1).x,
-                        (int) textureResultPoints.get(vertexInPolygonInd - 1).y,
-                        (int) textureResultPoints.get(vertexInPolygonInd).x,
-                        (int) textureResultPoints.get(vertexInPolygonInd).y,
+                        (int) resultPoints.get(0).x,
+                        (int) resultPoints.get(0).y,
+                        zCoordinates.get(0),
+                        (int) resultPoints.get(1).x,
+                        (int) resultPoints.get(1).y,
+                        zCoordinates.get(1),
+                        (int) resultPoints.get(2).x,
+                        (int) resultPoints.get(2).y,
+                        zCoordinates.get(2),
+                        (int) textureResultPoints.get(0).x,
+                        (int) textureResultPoints.get(0).y,
+                        (int) textureResultPoints.get(1).x,
+                        (int) textureResultPoints.get(1).y,
+                        (int) textureResultPoints.get(2).x,
+                        (int) textureResultPoints.get(2).y,
                         color,
                         ZBuffer,
                         texture,
                         drawTexture,
                         useLight,
-                        normals.get(vertexInPolygonInd - 2),
-                        normals.get(vertexInPolygonInd - 1),
-                        normals.get(vertexInPolygonInd),
-                        ray);
+                        normals.get(0),
+                        normals.get(1),
+                        normals.get(2),
+                        ray,
+                        width,
+                        height);
             }
         }
     }
