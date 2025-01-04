@@ -1,9 +1,7 @@
 package com.cgvsu.render_engine;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.time.chrono.IsoChronology;
 import java.util.ArrayList;
 
 import com.cgvsu.math.vector.Vector2f;
@@ -31,12 +29,13 @@ public class RenderEngine {
             boolean drawLines,
             boolean drawTexture,
             boolean useLight,
-            Color color) throws IOException {
+            Color color,
+            float[][] ZBuffer) throws IOException {
         Matrix4f modelMatrix = rotateScaleTranslate();
         Matrix4f viewMatrix = camera.getViewMatrix();
         Matrix4f projectionMatrix = camera.getProjectionMatrix();
 
-        final Vector3f l = new Vector3f(1, 0, 0);
+        final Vector3f l = new Vector3f(viewMatrix.getCell(0,2), viewMatrix.getCell(1,2), viewMatrix.getCell(2,2));
         int textureWidth = 0;
         int textureHeight = 0;
         if (texture != null) {
@@ -46,12 +45,7 @@ public class RenderEngine {
         Matrix4f modelViewProjectionMatrix = new Matrix4f(modelMatrix);
         modelViewProjectionMatrix = modelViewProjectionMatrix.mulMatrix(viewMatrix);
         modelViewProjectionMatrix = modelViewProjectionMatrix.mulMatrix(projectionMatrix);
-        Float[][] ZBuffer = new Float[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                ZBuffer[x][y] = 9999.0F;
-            }
-        }
+
         final int nPolygons = mesh.polygons.size();
         for (int polygonInd = 0; polygonInd < nPolygons; ++polygonInd) {
             final int nVerticesInPolygon = mesh.polygons.get(polygonInd).getVertexIndices().size();
@@ -81,7 +75,7 @@ public class RenderEngine {
 
     private static void draw(int nVerticesInPolygon, GraphicsContext graphicsContext
             , ArrayList<Point2f> resultPoints, ArrayList<Float> zCoordinates,
-                             ArrayList<Point2f> textureResultPoints, Float[][] ZBuffer,
+                             ArrayList<Point2f> textureResultPoints, float[][] ZBuffer,
                              BufferedImage texture,
                              boolean drawLines,
                              boolean drawTexture,

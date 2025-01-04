@@ -19,7 +19,7 @@ public class Rasterization {
                                     final int tx1, final int ty1,
                                     final int tx2, final int ty2,
                                     Color color,
-                                    Float[][] zBuffer,
+                                    float[][] zBuffer,
                                     BufferedImage texture,
                                     boolean useTexture,
                                     boolean useLight,
@@ -30,7 +30,6 @@ public class Rasterization {
                                     int width,
                                     int height) {
 
-        float maxZ = -9999;
         Point2f d0 = new Point2f(x0, y0);
         Point2f d1 = new Point2f(x1, y1);
         Point2f d2 = new Point2f(x2, y2);
@@ -39,8 +38,6 @@ public class Rasterization {
         dots.sort(compYX);
         float function1;
         float function2;
-        float function3 = 0;
-        float function4 = 0;
         Point2f vertex1 = dots.get(1);
         Point2f vertex2 = dots.get(2);
 
@@ -56,64 +53,8 @@ public class Rasterization {
             function2 = 0;
         }
 
-        //Расчёт функций нижней половины
-        if (vertex2.y >= vertex1.y) {
-            if (dots.get(2).y - vertex1.y != 0) {
-                function3 = (dots.get(2).x - vertex1.x) / (dots.get(2).y - vertex1.y);
-            } else function3 = 0;
-        } else {
-            if (dots.get(2).y - vertex2.y != 0) {
-                function4 = (dots.get(2).x - vertex2.x) / (dots.get(2).y - vertex2.y);
-            } else function4 = 0;
-        }
-        //Переменная, чтобы понять, нужно ли отрисовывать треугольник
-        float temp = 0;
-
-        for (int row = Math.max((int) dots.get(0).y, 0); row < Math.min(dots.get(1).y, height); row++) {
-            int fullFunctionLeft = Math.max((int) (function1 * row + vertex2.x - function1 * vertex2.y), 0);
-            int fullFunctionRight = Math.max((int) (function2 * row + vertex1.x - function2 * vertex1.y), 0);
-            temp = 0;
-            for (int col = Math.min(fullFunctionRight, fullFunctionLeft); col <= Math.max(fullFunctionRight, fullFunctionLeft); col++) {
-                if (col < width && row < height && col > 0 && row > 0) {
-                    if (zBuffer[col][row] > maxZ) {
-                        maxZ = zBuffer[col][row];
-                        if (zBuffer[col][row] == 9999) {
-                            temp = 9999;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (temp == 9999) {
-                break;
-            }
-        }
-        if (temp != 9999) {
-            for (int row = (int) dots.get(1).y; row < dots.get(2).y; row++) {
-                int fullFunctionLeft = (int) (function3 * row + vertex2.x - function3 * vertex2.y);
-                int fullFunctionRight = (int) (function4 * row + vertex1.x - function4 * vertex1.y);
-                for (int col = Math.min(fullFunctionRight, fullFunctionLeft); col <= Math.max(fullFunctionRight, fullFunctionLeft); col++) {
-                    if (col < width && row < height && col > 0 && row > 0) {
-                        if (zBuffer[col][row] > maxZ) {
-                            maxZ = zBuffer[col][row];
-                            if (zBuffer[col][row] == 9999) {
-                                temp = 9999;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (temp == 9999) {
-                    break;
-                }
-            }
-        }
-        if (Math.min(Math.min(z0, z1), z2) > maxZ && maxZ != -9999) {
-            return;
-        }
-
         int startArray = Math.max((int) dots.get(0).y, 0);
-        int endArray = (int) Math.min(dots.get(1).y, height-1);
+        int endArray = (int) Math.min(dots.get(1).y+1, height-1);
         int[] fullFunctionRightArray = new int[Math.abs(endArray - startArray)];
         int[] fullFunctionLeftArray = new int[Math.abs(endArray - startArray)];
 
@@ -152,7 +93,7 @@ public class Rasterization {
             for (int col = fullFunctionLeftArray[row - startArray]; col <= (fullFunctionRightArray[row - startArray]); col++) {
                 float[] coordinates = calculateBarycentricCoordinates(col, row, d0, d1, d2);
                 float z = coordinates[0] * z0 + coordinates[1] * z1 + coordinates[2] * z2;
-                if (zBuffer[col][row] >= z) {
+                if (zBuffer[col][row]+0.001 > z) {
                     Color finalColor = color;
                     if (useTexture) {
                         int x = coordinatesFix((int) (coordinates[0] * tx0 + coordinates[1] * tx1 + coordinates[2] * tx2), texture.getWidth());
@@ -167,13 +108,12 @@ public class Rasterization {
                         Vector3f currentN = new Vector3f(coordinates[0] * n0.getX() + coordinates[1] * n1.getX() + coordinates[2] * n2.getX(),
                                 coordinates[0] * n0.getY() + coordinates[1] * n1.getY() + coordinates[2] * n2.getY(),
                                 coordinates[0] * n0.getZ() + coordinates[1] * n1.getZ() + coordinates[2] * n2.getZ());
-                        float l = (float) -(currentN.getX() * ray.getX() + currentN.getY() * ray.getY() + currentN.getZ() * ray.getZ());// currentN.vectorMultiply(ray);
-                        float k = 0.7F;
+                        float l = -(currentN.getX() * ray.getX() + currentN.getY() * ray.getY() + currentN.getZ() * ray.getZ());
+                        float k = 0.5F;
                         if (l > 0) {
-                            if (l > 1) {
-                                l = 1;
-                            }
-                            finalColor = new Color(finalColor.getRed() * (1 - k) + finalColor.getRed() * k * l, finalColor.getGreen() * (1 - k) + finalColor.getGreen() * k * l, finalColor.getBlue() * (1 - k) + finalColor.getBlue() * k * l, 1);
+                            finalColor = new Color(Math.min(1, finalColor.getRed() * (1 - k) + finalColor.getRed() * k * l),
+                                    Math.min(1, finalColor.getGreen() * (1 - k) + finalColor.getGreen() * k * l),
+                                    Math.min(1, finalColor.getBlue() * (1 - k) + finalColor.getBlue() * k * l), 1);
                         } else {
                             finalColor = new Color(finalColor.getRed() * (1 - k), finalColor.getGreen() * (1 - k), finalColor.getBlue() * (1 - k), 1);
                         }
@@ -184,6 +124,7 @@ public class Rasterization {
             }
         }
 
+        //Функции нижней половины
         if (vertex2.y >= vertex1.y) {
             if (dots.get(2).y - vertex1.y != 0) {
                 function2 = (dots.get(2).x - vertex1.x) / (dots.get(2).y - vertex1.y);
@@ -194,7 +135,7 @@ public class Rasterization {
             } else function1 = 0;
         }
         startArray = Math.max((int) dots.get(1).y, 0);
-        endArray = Math.min((int) dots.get(2).y, height-1);
+        endArray = Math.min((int) dots.get(2).y+1, height-1);
         fullFunctionRightArray = new int[Math.abs(endArray - startArray)];
         fullFunctionLeftArray = new int[Math.abs(endArray - startArray)];
 
@@ -233,7 +174,7 @@ public class Rasterization {
             for (int col = fullFunctionLeftArray[row - startArray]; col <= (fullFunctionRightArray[row - startArray]); col++) {
                 float[] coordinates = calculateBarycentricCoordinates(col, row, d0, d1, d2);
                 float z = coordinates[0] * z0 + coordinates[1] * z1 + coordinates[2] * z2;
-                if (zBuffer[col][row] >= z) {
+                if (zBuffer[col][row]+0.001 > z) {
                     Color finalColor = color;
                     if (useTexture) {
                         int x = coordinatesFix((int) (coordinates[0] * tx0 + coordinates[1] * tx1 + coordinates[2] * tx2), texture.getWidth());
@@ -248,13 +189,12 @@ public class Rasterization {
                         Vector3f currentN = new Vector3f(coordinates[0] * n0.getX() + coordinates[1] * n1.getX() + coordinates[2] * n2.getX(),
                                 coordinates[0] * n0.getY() + coordinates[1] * n1.getY() + coordinates[2] * n2.getY(),
                                 coordinates[0] * n0.getZ() + coordinates[1] * n1.getZ() + coordinates[2] * n2.getZ());
-                        float l = -(currentN.getX() * ray.getX() + currentN.getY() * ray.getY() + currentN.getZ() * ray.getZ());// currentN.vectorMultiply(ray);
-                        float k = 0.7F;
+                        float l = -(currentN.getX() * ray.getX() + currentN.getY() * ray.getY() + currentN.getZ() * ray.getZ());
+                        float k = 0.5F;
                         if (l > 0) {
-                            if (l > 1) {
-                                l = 1;
-                            }
-                            finalColor = new Color(finalColor.getRed() * (1 - k) + finalColor.getRed() * k * l, finalColor.getGreen() * (1 - k) + finalColor.getGreen() * k * l, finalColor.getBlue() * (1 - k) + finalColor.getBlue() * k * l, 1);
+                            finalColor = new Color(Math.min(1, finalColor.getRed() * (1 - k) + finalColor.getRed() * k * l),
+                                    Math.min(1, finalColor.getGreen() * (1 - k) + finalColor.getGreen() * k * l),
+                                    Math.min(1, finalColor.getBlue() * (1 - k) + finalColor.getBlue() * k * l), 1);
                         } else {
                             finalColor = new Color(finalColor.getRed() * (1 - k), finalColor.getGreen() * (1 - k), finalColor.getBlue() * (1 - k), 1);
                         }
@@ -299,7 +239,7 @@ public class Rasterization {
         return value;
     }
 
-    public static void drawLine(PixelWriter pixelWriter, int x0, int y0, float z0, int x1, int y1, float z1, Float[][] ZBuffer, int width, int height) {
+    public static void drawLine(PixelWriter pixelWriter, int x0, int y0, float z0, int x1, int y1, float z1, float[][] ZBuffer, int width, int height) {
         int x = x0;
         int y = y0;
         int deltax = Math.abs(x1 - x0);

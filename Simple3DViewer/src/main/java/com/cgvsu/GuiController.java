@@ -91,12 +91,19 @@ public class GuiController {
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
-        KeyFrame frame = new KeyFrame(Duration.millis(15), event -> {
+        KeyFrame frame = new KeyFrame(Duration.millis(50), event -> {
             double width = canvas.getWidth();
             double height = canvas.getHeight();
 
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
+
+            float[][] ZBuffer = new float[(int) width][(int) height];
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    ZBuffer[x][y] = 9999.0F;
+                }
+            }
 
             if (mesh != null) {
                 Triangulator.triangulateModel(mesh);
@@ -111,7 +118,8 @@ public class GuiController {
                             drawLines.get(),
                             drawTexture.get(),
                             useLight.get(),
-                            colorPicker.getValue());
+                            colorPicker.getValue(),
+                            ZBuffer);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -209,32 +217,32 @@ public class GuiController {
 
     @FXML
     public void handleCameraForward(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, 0, -TRANSLATION));
+        camera.movePosition(new Vector3f(0, 0, -TRANSLATION*10));
     }
 
     @FXML
     public void handleCameraBackward(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, 0, TRANSLATION));
+        camera.movePosition(new Vector3f(0, 0, TRANSLATION*10));
     }
 
     @FXML
     public void handleCameraLeft(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(TRANSLATION, 0, 0));
+        camera.movePosition(new Vector3f(TRANSLATION*10, 0, 0));
     }
 
     @FXML
     public void handleCameraRight(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(-TRANSLATION, 0, 0));
+        camera.movePosition(new Vector3f(-TRANSLATION*10, 0, 0));
     }
 
     @FXML
     public void handleCameraUp(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, TRANSLATION, 0));
+        camera.movePosition(new Vector3f(0, TRANSLATION*10, 0));
     }
 
     @FXML
     public void handleCameraDown(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, -TRANSLATION, 0));
+        camera.movePosition(new Vector3f(0, -TRANSLATION*10, 0));
     }
 
     @FXML
