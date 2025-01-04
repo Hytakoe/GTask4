@@ -99,8 +99,8 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             float[][] ZBuffer = new float[(int) width][(int) height];
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
+            for (int x = 0; x < (int)width; x++) {
+                for (int y = 0; y < (int)height; y++) {
                     ZBuffer[x][y] = 9999.0F;
                 }
             }

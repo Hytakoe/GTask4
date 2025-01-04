@@ -122,22 +122,23 @@ public class Matrix4f {
         return new Matrix4f(res);
     }
 
+    // умножает матрицу на вектор-столбец
     public Vector4f mulVector(Vector4f vectorCol) {
         if (vectorCol == null) {
             throw new NullPointerException("Предоставленный вектор не может быть нулевым");
         }
 
         float[] values = new float[4];
-        for (int i = 0; i < matrix.length; i++) {
+        for (int i = 0; i < 4; i++) {
             values[i] = 0;
-            for (int j = 0; j < matrix[0].length; j++) {
+            for (int j = 0; j < 4; j++) {
                 values[i] += (matrix[i][j] * vectorCol.get(j));
             }
         }
         return new Vector4f(values[0], values[1], values[2], values[3]);
     }
 
-    // умножает матрицу на вектор-столбец
+    // умножает матрицу на вектор-столбец c нормировкой по W координате
     public Vector3f mulVectorDivW(Vector3f vectorCol3f) {
         if (vectorCol3f == null) {
             throw new NullPointerException("Предоставленный вектор не может быть нулевым");
@@ -152,8 +153,8 @@ public class Matrix4f {
             throw new IllegalArgumentException("Предоставленная матрица должна быть матрицей 4 на 4.");
         }
         float[][] values = new float[4][4];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 values[i][j] = 0;
                 for (int k = 0; k < 4; k++) {
                     values[i][j] += matrix[i][k] * matrix4f.getCell(k, j);
