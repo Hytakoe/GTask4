@@ -14,6 +14,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
@@ -125,6 +127,45 @@ public class GuiController {
             }
         });
         deleteModelButton.setOnAction(this::handleDeleteModelButtonClick);
+
+        canvas.setOnDragOver(event -> {
+            if (event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+            event.consume();
+        });
+
+        anchorPane.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            boolean success = false;
+            if (dragboard.hasFiles()) {
+                for (File file : dragboard.getFiles()) {
+                    if (file.getName().toLowerCase().endsWith(".obj")) {
+                        loadModelFromFile(file); // Загружаем модель
+                        success = true;
+                    } else if (isImageFile(file)) {
+                        loadTextureFromFile(file); // Загружаем текстуру
+                        success = true;
+                    }
+                }
+                if (!success) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("Поддерживаются только файлы .obj и изображения (.png, .jpg, .jpeg)");
+                    alert.show();
+                }
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
+        // Подсветка области для Drop
+        anchorPane.setOnDragEntered(event -> {
+            anchorPane.setStyle("-fx-background-color: #e0e0e0;");
+        });
+
+        anchorPane.setOnDragExited(event -> {
+            anchorPane.setStyle("-fx-background-color: transparent;");
+        });
         timeline.getKeyFrames().add(frame);
         timeline.play();
     }
@@ -160,27 +201,23 @@ public class GuiController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
         fileChooser.setTitle("Save Model");
 
-        // Устанавливаем начальную директорию как папку проекта
         String projectDir = System.getProperty("user.dir");
         fileChooser.setInitialDirectory(new File(projectDir));
 
-        // Открываем диалог сохранения файла
         File file = fileChooser.showSaveDialog((Stage) canvas.getScene().getWindow());
         if (file == null) {
-            return; // Если пользователь закрыл диалог без выбора файла
+            return;
         }
 
-        // Получаем путь к выбранному файлу
         Path filePath = Path.of(file.getAbsolutePath());
         Alert alert = new Alert(Alert.AlertType.NONE);
         try {
             String modelData = ObjWriter.write(mesh);
-            Files.write(filePath, modelData.getBytes()); // Записываем данные в файл
+            Files.write(filePath, modelData.getBytes());
             alert.setAlertType(Alert.AlertType.INFORMATION);
             alert.setContentText("Модель успешно сохранена в файл: " + filePath);
             alert.show();
         } catch (IOException exception) {
-            // Обработка ошибок записи файла
             exception.printStackTrace();
         }
     }
@@ -302,6 +339,36 @@ public class GuiController {
         } catch (NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Некорректные данные в одном из полей");
+            alert.show();
+        }
+    }
+
+    private boolean isImageFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg");
+    }
+
+    private void loadModelFromFile(File file) {
+        try {
+            String fileContent = Files.readString(file.toPath());
+            mesh = ObjReader.read(fileContent); // Загружаем модель
+            timeline.play(); // Обновляем отображение
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Ошибка при загрузке файла: " + exception.getMessage());
+            alert.show();
+        }
+    }
+
+    private void loadTextureFromFile(File file) {
+        try {
+            texture = ImageIO.read(file); // Загружаем текстуру
+            timeline.play(); // Обновляем отображение
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Ошибка при загрузке текстуры: " + exception.getMessage());
             alert.show();
         }
     }

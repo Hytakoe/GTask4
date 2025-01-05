@@ -1,0 +1,6 @@
+.root {
+    -fx-base: #2d2d2d; /* Основной цвет фона */
+    -fx-background: #3c3f41; /* Цвет фона */
+    -fx-text-fill: #ffffff; /* Цвет текста */
+    -fx-drag-highlight: #4d4d4d; /* Цвет подсветки при перетаскивании */
+}
