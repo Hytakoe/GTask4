@@ -25,8 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+import javafx.scene.control.TextField;
 import java.util.List;
 import javax.imageio.ImageIO;
 import com.cgvsu.math.vector.Vector3f;
@@ -266,5 +265,44 @@ public class GuiController {
         alert.setAlertType(Alert.AlertType.INFORMATION);
         alert.setContentText("Модель и текстура удалены.");
         alert.show();
+    }
+
+    @FXML
+    private TextField rx, ry, rz; // Поля для вращения
+    @FXML
+    private TextField sx, sy, sz; // Поля для масштабирования
+    @FXML
+    private TextField tx, ty, tz; // Поля для перемещения
+
+    @FXML
+    private void applyTransformations() {
+        try {
+            if (mesh != null) {
+                // Вращение
+                float angleX = Float.parseFloat(rx.getText());
+                float angleY = Float.parseFloat(ry.getText());
+                float angleZ = Float.parseFloat(rz.getText());
+                //rotate(angleX, angleY, angleZ);
+
+                // Масштабирование
+                float scaleX = Float.parseFloat(sx.getText());
+                float scaleY = Float.parseFloat(sy.getText());
+                float scaleZ = Float.parseFloat(sz.getText());
+                //scale(scaleX, scaleY, scaleZ);
+
+                // Перемещение
+                float translateX = Float.parseFloat(tx.getText());
+                float translateY = Float.parseFloat(ty.getText());
+                float translateZ = Float.parseFloat(tz.getText());
+                //translate(translateX, translateY, translateZ);
+
+                // Обновляем отображение
+                timeline.play();
+            }
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Некорректные данные в одном из полей");
+            alert.show();
+        }
     }
 }

@@ -17,8 +17,8 @@ public class Simple3DViewer extends Application {
 
         Scene scene = new Scene(viewport);
         //stage.setFullScreen(true);
-        stage.setWidth(1600);
-        stage.setHeight(900);
+        stage.setWidth(800);
+        stage.setHeight(450);
         viewport.prefWidthProperty().bind(scene.widthProperty());
         viewport.prefHeightProperty().bind(scene.heightProperty());
 
