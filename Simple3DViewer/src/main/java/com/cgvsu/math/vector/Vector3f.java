@@ -167,6 +167,15 @@ public class Vector3f {
         vNormal.normalize();
         return vNormal;
     }
+
+    // Укорачивает значения координат вектора до 4 знаков после запятой
+    public void shortenTo4 (){
+        float scale = (float) Math.pow(10, 4); // 10^4 для 4 знаков после запятой
+        x = Math.round(x * scale) / scale;
+        y = Math.round(y * scale) / scale;
+        z = Math.round(z * scale) / scale;
+    }
+
     // Деление вектора на скаляр
     public Vector3f divide(float scalar) {
         return new Vector3f(x / scalar, y / scalar, z / scalar);

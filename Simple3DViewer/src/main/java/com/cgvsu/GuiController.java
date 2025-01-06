@@ -1,5 +1,6 @@
 package com.cgvsu;
 
+import com.cgvsu.affine_transformations.*;
 import com.cgvsu.model.NormalsCalculation;
 import com.cgvsu.model.Triangulator;
 import com.cgvsu.objwriter.ObjWriter;
@@ -319,19 +320,36 @@ public class GuiController {
                 float angleX = Float.parseFloat(rx.getText());
                 float angleY = Float.parseFloat(ry.getText());
                 float angleZ = Float.parseFloat(rz.getText());
-                //rotate(angleX, angleY, angleZ);
+
+                CompositeAffine composite = new CompositeAffine();
+                if (angleX!=0){
+                    composite.add(new Rotate(angleX, Axis.X));
+                }
+                if (angleY!=0){
+                    composite.add(new Rotate(angleY, Axis.Y));
+                }
+                if (angleZ!=0){
+                    composite.add(new Rotate(angleZ, Axis.Z));
+                }
+                mesh.vertices = composite.execute(mesh.vertices);
 
                 // Масштабирование
                 float scaleX = Float.parseFloat(sx.getText());
                 float scaleY = Float.parseFloat(sy.getText());
                 float scaleZ = Float.parseFloat(sz.getText());
-                //scale(scaleX, scaleY, scaleZ);
+
+                composite = new CompositeAffine();
+                composite.add(new Scale(scaleX,scaleY,scaleZ));
+                mesh.vertices = composite.execute(mesh.vertices);
 
                 // Перемещение
                 float translateX = Float.parseFloat(tx.getText());
                 float translateY = Float.parseFloat(ty.getText());
                 float translateZ = Float.parseFloat(tz.getText());
-                //translate(translateX, translateY, translateZ);
+
+                composite = new CompositeAffine();
+                composite.add(new Transfer(translateX,translateY,translateZ));
+                mesh.vertices = composite.execute(mesh.vertices);
 
                 // Обновляем отображение
                 timeline.play();
