@@ -9,22 +9,30 @@
 <AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.GuiController">
     <MenuBar prefHeight="25.0" prefWidth="165.0">
         <Menu mnemonicParsing="false" text="File">
-         <MenuItem mnemonicParsing="false" onAction="#onSaveModelMenuItemClick" text="Download Model">
-            <accelerator>
-               <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-            </accelerator>
-         </MenuItem>
             <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
-            <accelerator>
-                <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-            </accelerator>
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
             </MenuItem>
-         <MenuItem mnemonicParsing="false" onAction="#onLoadTextureMenuItemClick" text="Load texture">
-            <accelerator>
-               <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-            </accelerator>
-         </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#onLoadTextureMenuItemClick" text="Load texture">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+            <Menu mnemonicParsing="false" text="Save Model">
+                <MenuItem mnemonicParsing="false" onAction="#onSaveOriginalModel" text="Save Original Model">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                    </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" onAction="#onSaveModifiedModel" text="Save Modified Model">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                    </accelerator>
+                </MenuItem>
+            </Menu>
         </Menu>
+
         <Menu mnemonicParsing="false" text="Camera Options">
             <MenuItem mnemonicParsing="false" onAction="#handleCameraForward" text="Forward">
                 <accelerator>
@@ -108,15 +116,15 @@
                <font>
                   <Font size="14.0" />
                </font></Text>
-            <TextField fx:id="rx" layoutX="39.0" layoutY="52.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="ry" layoutX="39.0" layoutY="84.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="rz" layoutX="39.0" layoutY="119.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="sx" layoutX="171.0" layoutY="54.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="sy" layoutX="171.0" layoutY="86.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="sz" layoutX="171.0" layoutY="121.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="tx" layoutX="309.0" layoutY="52.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="ty" layoutX="309.0" layoutY="84.0" prefHeight="25.0" prefWidth="68.0" />
-            <TextField fx:id="tz" layoutX="309.0" layoutY="119.0" prefHeight="25.0" prefWidth="68.0" />
+            <TextField fx:id="rx" alignment="CENTER" layoutX="39.0" layoutY="52.0" prefHeight="25.0" prefWidth="68.0" text="0" />
+            <TextField fx:id="ry" alignment="CENTER" layoutX="39.0" layoutY="84.0" prefHeight="25.0" prefWidth="68.0" text="0" />
+            <TextField fx:id="rz" alignment="CENTER" layoutX="39.0" layoutY="119.0" prefHeight="25.0" prefWidth="68.0" text="0" />
+            <TextField fx:id="sx" alignment="CENTER" layoutX="171.0" layoutY="54.0" prefHeight="25.0" prefWidth="68.0" text="1" />
+            <TextField fx:id="sy" alignment="CENTER" layoutX="171.0" layoutY="86.0" prefHeight="25.0" prefWidth="68.0" text="1" />
+            <TextField fx:id="sz" alignment="CENTER" layoutX="171.0" layoutY="121.0" prefHeight="25.0" prefWidth="68.0" text="1" />
+            <TextField fx:id="tx" alignment="CENTER" layoutX="309.0" layoutY="52.0" prefHeight="25.0" prefWidth="68.0" text="0" />
+            <TextField fx:id="ty" alignment="CENTER" layoutX="309.0" layoutY="84.0" prefHeight="25.0" prefWidth="68.0" text="0" />
+            <TextField fx:id="tz" alignment="CENTER" layoutX="309.0" layoutY="119.0" prefHeight="25.0" prefWidth="68.0" text="0" />
             <Button layoutX="40.0" layoutY="156.0" mnemonicParsing="false" onAction="#applyTransformations" text="Execute">
                <font>
                   <Font size="14.0" />

@@ -195,9 +195,8 @@ public class GuiController {
             exception.printStackTrace();
         }
     }
-
     @FXML
-    private void onSaveModelMenuItemClick() {
+    private void onSaveModelMenuItemClick(Model modelToSave) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
         fileChooser.setTitle("Save Model");
@@ -213,16 +212,30 @@ public class GuiController {
         Path filePath = Path.of(file.getAbsolutePath());
         Alert alert = new Alert(Alert.AlertType.NONE);
         try {
-            String modelData = ObjWriter.write(mesh);
+            String modelData = ObjWriter.write(modelToSave);
             Files.write(filePath, modelData.getBytes());
+
             alert.setAlertType(Alert.AlertType.INFORMATION);
             alert.setContentText("Модель успешно сохранена в файл: " + filePath);
             alert.show();
         } catch (IOException exception) {
             exception.printStackTrace();
+
+            alert.setAlertType(Alert.AlertType.ERROR);
+            alert.setContentText("Ошибка при сохранении модели: " + exception.getMessage());
+            alert.show();
         }
     }
 
+    @FXML
+    private void onSaveOriginalModel(ActionEvent event) {
+        onSaveModelMenuItemClick(mesh);
+    }
+
+    @FXML
+    private void onSaveModifiedModel(ActionEvent event) {
+        //onSaveModelMenuItemClick(modifiedMesh);
+    }
 
 
     @FXML
