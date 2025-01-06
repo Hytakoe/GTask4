@@ -50,6 +50,7 @@ public class GuiController {
     private Canvas canvas;
 
     private Model mesh = null;
+    private Model modifiedMesh = null;
     private BufferedImage texture;
 
     private List<Camera> cameras = List.of(
@@ -229,12 +230,28 @@ public class GuiController {
 
     @FXML
     private void onSaveOriginalModel(ActionEvent event) {
-        onSaveModelMenuItemClick(mesh);
+        if (mesh == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Исходная модель не загружена");
+            alert.setContentText("Пожалуйста, загрузите модель перед сохранением.");
+            alert.showAndWait();
+        } else {
+            onSaveModelMenuItemClick(mesh);
+        }
     }
 
     @FXML
     private void onSaveModifiedModel(ActionEvent event) {
-        //onSaveModelMenuItemClick(modifiedMesh);
+        if (modifiedMesh == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Изменённая модель не загружена");
+            alert.setContentText("Пожалуйста, создайте или загрузите изменённую модель перед сохранением.");
+            alert.showAndWait();
+        } else {
+            onSaveModelMenuItemClick(modifiedMesh);
+        }
     }
 
 
