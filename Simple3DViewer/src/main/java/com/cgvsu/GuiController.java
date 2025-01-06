@@ -16,8 +16,10 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -45,6 +47,8 @@ public class GuiController {
 
     @FXML
     AnchorPane anchorPane;
+    @FXML
+    Pane mainPane;
 
     @FXML
     private Canvas canvas;
@@ -88,7 +92,7 @@ public class GuiController {
         drawTexture.bind(drawTextureCheckBox.selectedProperty());
         useLight.bind(useLightCheckBox.selectedProperty());
 
-        anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
+        anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()- mainPane.getWidth()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
         timeline = new Timeline();
@@ -281,7 +285,10 @@ public class GuiController {
             exception.printStackTrace();
         }
     }
-
+    @FXML
+    public void handleCanvasClick(MouseEvent mouseEvent){
+        canvas.requestFocus();
+    }
     @FXML
     public void handleCameraForward(ActionEvent actionEvent) {
         camera.movePosition(new Vector3f(0, 0, -TRANSLATION*10));

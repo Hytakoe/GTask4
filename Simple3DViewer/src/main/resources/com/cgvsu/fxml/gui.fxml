@@ -67,8 +67,8 @@
         </Menu>
     </MenuBar>
 
-    <Canvas fx:id="canvas" height="870" width="1125.0" AnchorPane.topAnchor="30.0" />
-   <Pane layoutX="437.0" layoutY="132.0" prefHeight="880.0" prefWidth="430.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
+    <Canvas fx:id="canvas" height="870" onMouseClicked="#handleCanvasClick" width="1125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+   <Pane fx:id="mainPane" layoutX="437.0" layoutY="132.0" prefHeight="880.0" prefWidth="430.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
        <AnchorPane layoutX="3.0" layoutY="37.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
             <children>
                <CheckBox fx:id="drawLinesCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="DrawLines">
@@ -136,5 +136,7 @@
          <font>
             <Font size="14.0" />
          </font></ToggleButton>
+      <ListView layoutX="14.0" layoutY="456.0" prefHeight="200.0" prefWidth="200.0" />
+      <Button layoutX="14.0" layoutY="417.0" mnemonicParsing="false" text="Button" />
    </Pane>
 </AnchorPane>
