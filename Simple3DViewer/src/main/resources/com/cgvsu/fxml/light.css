@@ -1,6 +1,43 @@
 .root {
-    -fx-base: #f4f4f4; /* Основной цвет фона */
-    -fx-background: #ffffff; /* Цвет фона */
-    -fx-text-fill: #000000; /* Цвет текста */
-    -fx-drag-highlight: #e0e0e0; /* Цвет подсветки при перетаскивании */
+    -fx-base: #ececec;
+    -fx-background: #f4f4f4;
+    -fx-control-inner-background: white;
+    -fx-text-fill: black;
+}
+
+.button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: black;
+}
+
+.toggle-button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: black;
+}
+
+.canvas {
+    -fx-background-color: #e0e0e0;
+}
+
+.pane {
+    -fx-background-color: white;
+}
+
+.button, .toggle-button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: black;
+    -fx-opacity: 1.0;
+}
+
+
+.button:hover, .toggle-button:hover {
+    -fx-opacity: 0.8;
+}
+
+.button:pressed, .toggle-button:pressed {
+    -fx-opacity: 0.6;
+}
+
+.text {
+    -fx-fill: black;
 }

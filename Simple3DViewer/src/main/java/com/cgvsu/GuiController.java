@@ -13,8 +13,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -23,14 +22,12 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
+
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
-import javafx.scene.control.TextField;
 import java.util.List;
 import javax.imageio.ImageIO;
 import com.cgvsu.math.vector.Vector3f;
@@ -52,6 +49,12 @@ public class GuiController {
 
     @FXML
     private Canvas canvas;
+
+    @FXML
+    private ToggleButton themeToggleButton;
+
+    private boolean isDarkTheme = false;
+
 
     private Model mesh = null;
     private Model modifiedMesh = null;
@@ -141,7 +144,7 @@ public class GuiController {
             event.consume();
         });
 
-        anchorPane.setOnDragDropped(event -> {
+        canvas.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
             if (dragboard.hasFiles()) {
@@ -163,15 +166,13 @@ public class GuiController {
             event.setDropCompleted(success);
             event.consume();
         });
-
-        // Подсветка области для Drop
-        anchorPane.setOnDragEntered(event -> {
-            anchorPane.setStyle("-fx-background-color: #e0e0e0;");
+        themeToggleButton.setOnAction(event -> {
+            isDarkTheme = !isDarkTheme;
+            setTheme(isDarkTheme);
         });
 
-        anchorPane.setOnDragExited(event -> {
-            anchorPane.setStyle("-fx-background-color: transparent;");
-        });
+        setTheme(isDarkTheme);
+
         timeline.getKeyFrames().add(frame);
         timeline.play();
     }
@@ -426,5 +427,10 @@ public class GuiController {
             alert.setContentText("Ошибка при загрузке текстуры: " + exception.getMessage());
             alert.show();
         }
+    }
+    private void setTheme(boolean isDarkTheme) {
+        String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
+        anchorPane.getStylesheets().clear();
+        anchorPane.getStylesheets().add(getClass().getResource(theme).toExternalForm());
     }
 }

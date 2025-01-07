@@ -68,7 +68,7 @@
     </MenuBar>
 
     <Canvas fx:id="canvas" height="870" onMouseClicked="#handleCanvasClick" width="1125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
-   <Pane fx:id="mainPane" layoutX="437.0" layoutY="132.0" prefHeight="880.0" prefWidth="430.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+   <Pane fx:id="mainPane" layoutX="437.0" layoutY="132.0" prefHeight="880.0" prefWidth="430.0" styleClass="pane" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
        <AnchorPane layoutX="3.0" layoutY="37.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
             <children>
                <CheckBox fx:id="drawLinesCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="DrawLines">
@@ -92,27 +92,27 @@
          </AnchorPane>
       <AnchorPane layoutX="17.0" layoutY="217.0" prefHeight="200.0" prefWidth="410.0">
          <children>
-            <Text layoutX="318.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Transfer">
+            <Text layoutX="318.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Transfer">
                <font>
                   <Font size="14.0" />
                </font></Text>
-            <Text layoutX="189.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Scale">
+            <Text layoutX="189.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Scale">
                <font>
                   <Font size="14.0" />
                </font></Text>
-            <Text layoutX="53.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rotate">
+            <Text layoutX="53.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Rotate">
                <font>
                   <Font size="14.0" />
                </font></Text>
-            <Text layoutX="13.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="0.0" text="X">
+            <Text layoutX="13.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="X">
                <font>
                   <Font size="14.0" />
                </font></Text>
-            <Text layoutX="13.0" layoutY="137.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Z">
+            <Text layoutX="13.0" layoutY="137.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Z">
                <font>
                   <Font size="14.0" />
                </font></Text>
-            <Text layoutX="13.0" layoutY="102.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y">
+            <Text layoutX="13.0" layoutY="102.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Y">
                <font>
                   <Font size="14.0" />
                </font></Text>
