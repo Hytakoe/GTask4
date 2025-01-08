@@ -73,4 +73,62 @@ public class ObjWriter {
         }
         return stringPolygons;
     }
+    public static String writeModels(List<Model> models) {
+        StringBuilder result = new StringBuilder();
+        int vertexOffset = 0; // Смещение для вершин
+        int textureOffset = 0; // Смещение для текстурных координат
+        int normalOffset = 0; // Смещение для нормалей
+
+        for (Model model : models) {
+            // Записываем вершины
+            result.append(writeVertices(model.vertices));
+
+            // Записываем текстурные координаты (если есть)
+            if (!model.textureVertices.isEmpty()) {
+                result.append(writeTextureVertices(model.textureVertices));
+            }
+
+            // Записываем нормали (если есть)
+            if (!model.normals.isEmpty()) {
+                result.append(writeNormals(model.normals));
+            }
+
+            // Записываем полигоны с учетом смещений
+            StringBuilder polygonsBuilder = new StringBuilder();
+            for (Polygon polygon : model.polygons) {
+                polygonsBuilder.append("f");
+                List<Integer> vertexIndices = polygon.getVertexIndices();
+                List<Integer> textureVertexIndices = polygon.getTextureVertexIndices();
+                List<Integer> normalIndices = polygon.getNormalIndices();
+
+                for (int i = 0; i < vertexIndices.size(); i++) {
+                    int vertexIndex = vertexIndices.get(i) + 1 + vertexOffset;
+                    String faceElement = String.valueOf(vertexIndex);
+
+                    if (!textureVertexIndices.isEmpty()) {
+                        int textureIndex = textureVertexIndices.get(i) + 1 + textureOffset;
+                        faceElement += "/" + textureIndex;
+                    }
+                    if (!normalIndices.isEmpty()) {
+                        int normalIndex = normalIndices.get(i) + 1 + normalOffset;
+                        if (textureVertexIndices.isEmpty()) {
+                            faceElement += "/";
+                        }
+                        faceElement += "/" + normalIndex;
+                    }
+
+                    polygonsBuilder.append(" ").append(faceElement);
+                }
+                polygonsBuilder.append("\n");
+            }
+            result.append(polygonsBuilder);
+
+            // Обновляем смещения
+            vertexOffset += model.vertices.size();
+            textureOffset += model.textureVertices.size();
+            normalOffset += model.normals.size();
+        }
+
+        return result.toString();
+    }
 }

@@ -30,6 +30,11 @@
                         <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                     </accelerator>
                 </MenuItem>
+                <MenuItem mnemonicParsing="false" onAction="#saveSceneAsSingleFile" text="Save Modified Model">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                    </accelerator>
+                </MenuItem>
             </Menu>
         </Menu>
 
@@ -71,19 +76,19 @@
    <Pane fx:id="mainPane" layoutX="437.0" layoutY="132.0" prefHeight="880.0" prefWidth="430.0" styleClass="pane" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
        <AnchorPane layoutX="3.0" layoutY="37.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
             <children>
-               <CheckBox fx:id="drawLinesCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="DrawLines">
+               <CheckBox fx:id="drawLinesCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onDrawLinesCheckBoxAction" text="DrawLines">
                <font>
                   <Font size="14.0" />
                </font></CheckBox>
-               <CheckBox fx:id="drawTextureCheckBox" layoutX="13.0" layoutY="40.0" mnemonicParsing="false" text="DrawTexture">
+               <CheckBox fx:id="drawTextureCheckBox" layoutX="13.0" layoutY="40.0" mnemonicParsing="false" onAction="#onDrawTextureCheckBoxAction" text="DrawTexture">
                <font>
                   <Font size="14.0" />
                </font></CheckBox>
-               <CheckBox fx:id="useLightCheckBox" layoutX="14.0" layoutY="67.0" mnemonicParsing="false" text="UseLight">
+               <CheckBox fx:id="useLightCheckBox" layoutX="14.0" layoutY="67.0" mnemonicParsing="false" onAction="#onUseLightCheckBoxAction" text="UseLight">
                <font>
                   <Font size="14.0" />
                </font></CheckBox>
-               <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="94.0" />
+               <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="94.0" onAction="#onColorPickerAction" />
             <Button fx:id="deleteModelButton" layoutX="14.0" layoutY="135.0" mnemonicParsing="false" text="Delete model">
                <font>
                   <Font size="14.0" />
@@ -192,5 +197,6 @@
                </font>
             </Button>
          </children></AnchorPane>
+      <ListView fx:id="modelListView" layoutX="14.0" layoutY="667.0" prefHeight="200.0" prefWidth="200.0" />
    </Pane>
 </AnchorPane>

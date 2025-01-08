@@ -6,6 +6,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
 import com.cgvsu.math.point.Point2f;
+
 import java.awt.image.BufferedImage;
 import java.util.*;
 
@@ -54,7 +55,7 @@ public class Rasterization {
         }
 
         int startArray = Math.max((int) dots.get(0).y, 0);
-        int endArray = (int) Math.min(dots.get(1).y+1, height-1);
+        int endArray = (int) Math.min(dots.get(1).y + 1, height - 1);
         int[] fullFunctionRightArray = new int[Math.abs(endArray - startArray)];
         int[] fullFunctionLeftArray = new int[Math.abs(endArray - startArray)];
 
@@ -78,9 +79,9 @@ public class Rasterization {
         }
         if (fullFunctionLeftArray.length > 1 && fullFunctionRightArray.length > 1) {
             int leftSum = 0, rightSum = 0;
-            for (int i = 0; i < Math.min(fullFunctionLeftArray.length-1, 10); i++){
-                leftSum+=fullFunctionLeftArray[i];
-                rightSum+=fullFunctionRightArray[i];
+            for (int i = 0; i < Math.min(fullFunctionLeftArray.length - 1, 10); i++) {
+                leftSum += fullFunctionLeftArray[i];
+                rightSum += fullFunctionRightArray[i];
             }
             if (leftSum > rightSum) {
                 int[] tempArray = fullFunctionRightArray;
@@ -93,7 +94,7 @@ public class Rasterization {
             for (int col = fullFunctionLeftArray[row - startArray]; col <= (fullFunctionRightArray[row - startArray]); col++) {
                 float[] coordinates = calculateBarycentricCoordinates(col, row, d0, d1, d2);
                 float z = coordinates[0] * z0 + coordinates[1] * z1 + coordinates[2] * z2;
-                if (zBuffer[col][row]+0.001 > z) {
+                if (zBuffer[col][row] + 0.001 > z) {
                     Color finalColor = color;
                     if (useTexture) {
                         int x = coordinatesFix((int) (coordinates[0] * tx0 + coordinates[1] * tx1 + coordinates[2] * tx2), texture.getWidth());
@@ -135,7 +136,7 @@ public class Rasterization {
             } else function1 = 0;
         }
         startArray = Math.max((int) dots.get(1).y, 0);
-        endArray = Math.min((int) dots.get(2).y+1, height-1);
+        endArray = Math.min((int) dots.get(2).y + 1, height - 1);
         fullFunctionRightArray = new int[Math.abs(endArray - startArray)];
         fullFunctionLeftArray = new int[Math.abs(endArray - startArray)];
 
@@ -159,9 +160,9 @@ public class Rasterization {
         }
         if (fullFunctionLeftArray.length > 1 && fullFunctionRightArray.length > 1) {
             int leftSum = 0, rightSum = 0;
-            for (int i = 0; i < Math.min(fullFunctionLeftArray.length-1, 10); i++){
-                leftSum+=fullFunctionLeftArray[i];
-                rightSum+=fullFunctionRightArray[i];
+            for (int i = 0; i < Math.min(fullFunctionLeftArray.length - 1, 10); i++) {
+                leftSum += fullFunctionLeftArray[i];
+                rightSum += fullFunctionRightArray[i];
             }
             if (leftSum > rightSum) {
                 int[] tempArray = fullFunctionRightArray;
@@ -174,7 +175,7 @@ public class Rasterization {
             for (int col = fullFunctionLeftArray[row - startArray]; col <= (fullFunctionRightArray[row - startArray]); col++) {
                 float[] coordinates = calculateBarycentricCoordinates(col, row, d0, d1, d2);
                 float z = coordinates[0] * z0 + coordinates[1] * z1 + coordinates[2] * z2;
-                if (zBuffer[col][row]+0.001 > z) {
+                if (zBuffer[col][row] + 0.001 > z) {
                     Color finalColor = color;
                     if (useTexture) {
                         int x = coordinatesFix((int) (coordinates[0] * tx0 + coordinates[1] * tx1 + coordinates[2] * tx2), texture.getWidth());
@@ -211,7 +212,7 @@ public class Rasterization {
         float alpha;
         float beta;
         float gamma;
-        if (Float.isNaN(denominator)) {
+        if (Float.isNaN(denominator) || denominator == 0) {
             alpha = ((d1.y - d2.y) * (x - d2.x) + (d2.x - d1.x) * (y - d2.y));
             beta = ((d2.y - d0.y) * (x - d2.x) + (d0.x - d2.x) * (y - d2.y));
         } else {
