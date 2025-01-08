@@ -1,4 +1,4 @@
-.root {
+/*.root {
     -fx-base: #ececec;
     -fx-background: #f4f4f4;
     -fx-control-inner-background: white;
@@ -40,4 +40,127 @@
 
 .text {
     -fx-fill: black;
+}*/
+.root {
+    -fx-base: #f4e9d8; /* Мягкий бежевый */
+    -fx-background: #f8f4e6; /* Светлый бежевый */
+    -fx-control-inner-background: #f4e9d8; /* Мягкий бежевый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.button {
+    -fx-background-color: #d4c8b8; /* Светло-коричневый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.toggle-button {
+    -fx-background-color: #d4c8b8; /* Светло-коричневый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.canvas {
+    -fx-background-color: #f8f4e6; /* Светлый бежевый */
+}
+
+.pane {
+    -fx-background-color: #e8e0d1; /* Бежевый с оттенком серого */
+}
+
+.button, .toggle-button {
+    -fx-background-color: #d4c8b8; /* Светло-коричневый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+    -fx-opacity: 1.0;
+    -fx-border-color: #b8a99a; /* Тёплый коричневый */
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.button:hover, .toggle-button:hover {
+    -fx-opacity: 0.8;
+    -fx-border-color: #9c8c7d; /* Тёмный коричневый */
+}
+
+.button:pressed, .toggle-button:pressed {
+    -fx-opacity: 0.6;
+    -fx-border-color: #7c6c5d; /* Очень тёмный коричневый */
+}
+
+.text {
+    -fx-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.list-view {
+    -fx-background-color: #f8f4e6; /* Светлый бежевый */
+    -fx-control-inner-background: #f8f4e6; /* Светлый бежевый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.list-cell {
+    -fx-background-color: #f4e9d8; /* Мягкий бежевый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+    -fx-border-color: #d4c8b8; /* Светло-коричневый */
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: #d4c8b8; /* Светло-коричневый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #c4b8a8; /* Средний коричневый */
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.delete-button {
+    -fx-background-color: #d97777; /* Светло-красный с оттенком коричневого */
+    -fx-text-fill: white;
+    -fx-border-color: #b85c5c; /* Тёмный красный с оттенком коричневого */
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.delete-button:hover {
+    -fx-background-color: #b85c5c; /* Тёмный красный с оттенком коричневого */
+    -fx-opacity: 0.8;
+}
+
+.delete-button:pressed {
+    -fx-background-color: #984343; /* Очень тёмный красный с оттенком коричневого */
+    -fx-opacity: 0.6;
+}
+
+.text-field {
+    -fx-prompt-text-fill: rgba(74, 63, 53, 0.6); /* Полупрозрачный тёмно-коричневый */
+}
+
+/* Дополнительные элементы для "соевости" */
+.check-box {
+    -fx-text-fill: #4a3f35; /* Тёмно-коричневый */
+}
+
+.check-box .box {
+    -fx-background-color: #f4e9d8; /* Мягкий бежевый */
+    -fx-border-color: #b8a99a; /* Тёплый коричневый */
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #4a3f35; /* Тёмно-коричневый */
+}
+
+.slider .track {
+    -fx-background-color: #d4c8b8; /* Светло-коричневый */
+}
+
+.slider .thumb {
+    -fx-background-color: #4a3f35; /* Тёмно-коричневый */
+}
+
+.progress-bar .track {
+    -fx-background-color: #d4c8b8; /* Светло-коричневый */
+}
+
+.progress-bar .bar {
+    -fx-background-color: #4a3f35; /* Тёмно-коричневый */
 }

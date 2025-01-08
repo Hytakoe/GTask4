@@ -30,7 +30,7 @@
                         <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                     </accelerator>
                 </MenuItem>
-                <MenuItem mnemonicParsing="false" onAction="#saveSceneAsSingleFile" text="Save Modified Model">
+                <MenuItem mnemonicParsing="false" onAction="#saveSceneAsSingleFile" text="Save All Scene">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                     </accelerator>

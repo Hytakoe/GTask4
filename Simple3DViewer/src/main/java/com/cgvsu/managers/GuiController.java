@@ -95,7 +95,7 @@ public class GuiController {
     @FXML
     private Button deleteModelButton;
 
-    private boolean isDarkTheme = false;
+    private boolean isDarkTheme = true;
 
     private List<Model> models = new ArrayList<>();
     private Model currentModel = null;
@@ -683,7 +683,7 @@ public class GuiController {
         String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
         anchorPane.getStylesheets().clear();
         anchorPane.getStylesheets().add(getClass().getResource(theme).toExternalForm());
-        themeToggleButton.setText(isDarkTheme ? "Light theme" : "Dark theme");
+        themeToggleButton.setText(isDarkTheme ? "Soy theme" : "Dark theme");
     }
 
     private void showAlert(AlertType type, String title, String message) {
