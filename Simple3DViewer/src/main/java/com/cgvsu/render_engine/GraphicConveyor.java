@@ -55,6 +55,42 @@ public class GraphicConveyor {
         return result;
     }
 
+    public static Vector3f rotatePointAroundAxis(Vector3f point, Vector3f center, Vector3f axis, float angle) {
+        Vector3f translatedPoint = new Vector3f(
+                point.getX() - center.getX(),
+                point.getY() - center.getY(),
+                point.getZ() - center.getZ()
+        );
+
+        Matrix4f rotationMatrix = createRotationMatrix(axis, angle);
+        Vector3f rotatedPoint = GraphicConveyor.multiplyMatrix4ByVector3(rotationMatrix, translatedPoint);
+
+        return new Vector3f(
+                rotatedPoint.getX() + center.getX(),
+                rotatedPoint.getY() + center.getY(),
+                rotatedPoint.getZ() + center.getZ()
+        );
+    }
+
+    private static Matrix4f createRotationMatrix(Vector3f axis, float angle) {
+        float cos = (float) Math.cos(angle);
+        float sin = (float) Math.sin(angle);
+        float oneMinusCos = 1 - cos;
+
+        float x = axis.getX();
+        float y = axis.getY();
+        float z = axis.getZ();
+
+        float[] matrix = new float[]{
+                cos + x * x * oneMinusCos, x * y * oneMinusCos - z * sin, x * z * oneMinusCos + y * sin, 0,
+                y * x * oneMinusCos + z * sin, cos + y * y * oneMinusCos, y * z * oneMinusCos - x * sin, 0,
+                z * x * oneMinusCos - y * sin, z * y * oneMinusCos + x * sin, cos + z * z * oneMinusCos, 0,
+                0, 0, 0, 1
+        };
+
+        return new Matrix4f(matrix);
+    }
+
     // сначала надо транспонировать матрицу для правильного умножения
     public static Vector3f multiplyMatrix4ByVector3(final Matrix4f matrix, final Vector3f vertex) {
         Matrix4f matrixTrans = matrix.transposition();

@@ -3,9 +3,7 @@ package com.cgvsu.managers;
 import com.cgvsu.affine_transformations.*;
 import com.cgvsu.model.*;
 import com.cgvsu.objwriter.ObjWriter;
-import com.cgvsu.render_engine.CameraCell;
-import com.cgvsu.render_engine.ModelCell;
-import com.cgvsu.render_engine.RenderEngine;
+import com.cgvsu.render_engine.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -15,9 +13,7 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -37,11 +33,13 @@ import javax.imageio.ImageIO;
 import com.cgvsu.math.vector.Vector3f;
 
 import com.cgvsu.objreader.ObjReader;
-import com.cgvsu.render_engine.Camera;
 
 import static com.cgvsu.model.ModelVertexRemover.parseVertexIndexes;
 
 public class GuiController {
+    private double mousePosX, mousePosY;
+    private boolean isLeftDragging = false;
+    private boolean isRightDragging = false;
     private final BooleanProperty drawLines = new SimpleBooleanProperty(false);
     private final BooleanProperty drawTexture = new SimpleBooleanProperty(false);
     private final BooleanProperty useLight = new SimpleBooleanProperty(false);
@@ -442,6 +440,113 @@ public class GuiController {
     }
 
     @FXML
+    public void handleMousePressed(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) { // ЛКМ
+            mousePosX = event.getSceneX();
+            mousePosY = event.getSceneY();
+            isLeftDragging = true;
+        } else if (event.getButton() == MouseButton.SECONDARY) { // ПКМ
+            mousePosX = event.getSceneX();
+            mousePosY = event.getSceneY();
+            isRightDragging = true;
+        }
+    }
+
+    @FXML
+    public void handleMouseReleased(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            isLeftDragging = false;
+        } else if (event.getButton() == MouseButton.SECONDARY) {
+            isRightDragging = false;
+        }
+    }
+
+    @FXML
+    public void handleMouseDragged(MouseEvent event) {
+        if (isLeftDragging) {
+            // Вращение камеры (левая кнопка мыши)
+            double deltaX = event.getSceneX() - mousePosX;
+            double deltaY = event.getSceneY() - mousePosY;
+
+            float sensitivity = 0.0007f;
+
+            Vector3f target = camera.getTarget();
+            Vector3f position = camera.getPosition();
+            Vector3f right = new Vector3f(1, 0, 0);
+
+            Vector3f newTarget = GraphicConveyor.rotatePointAroundAxis(target, position, right, (float) -deltaY * sensitivity);
+            Vector3f up = new Vector3f(0, 1, 0);
+            newTarget = GraphicConveyor.rotatePointAroundAxis(newTarget, position, up, (float) -deltaX * sensitivity);
+
+            camera.setTarget(newTarget);
+
+            mousePosX = event.getSceneX();
+            mousePosY = event.getSceneY();
+        } else if (isRightDragging) {
+            // Вращение камеры вокруг target (правая кнопка мыши)
+            double deltaX = event.getSceneX() - mousePosX;
+            double deltaY = event.getSceneY() - mousePosY;
+
+            float sensitivity = 0.0007f;
+
+            Vector3f target = camera.getTarget();
+            Vector3f position = camera.getPosition();
+
+            // Вектор "вверх" (обычно это ось Y)
+            Vector3f up = new Vector3f(0, 1, 0);
+
+            // Вращение вокруг оси Y (горизонтальное движение мыши)
+            Vector3f newPosition = GraphicConveyor.rotatePointAroundAxis(position, target, up, (float) -deltaX * sensitivity);
+
+            // Вектор "вправо" (перпендикулярно направлению и вектору "вверх")
+            Vector3f direction = new Vector3f(target.getX() - newPosition.getX(), target.getY() - newPosition.getY(),target.getZ() - newPosition.getZ());
+            direction.normalize();
+
+            Vector3f right = new Vector3f();
+            right.cross(direction, up);
+            right.normalize();
+
+            // Вращение вокруг оси X (вертикальное движение мыши)
+            newPosition = GraphicConveyor.rotatePointAroundAxis(newPosition, target, right, (float) -deltaY * sensitivity);
+
+            // Обновляем позицию камеры
+            camera.setPosition(newPosition);
+
+            mousePosX = event.getSceneX();
+            mousePosY = event.getSceneY();
+        }
+    }
+
+    @FXML
+    public void handleMouseScrolled(ScrollEvent event) {
+        double delta = event.getDeltaY(); // Получаем значение прокрутки колеса мыши
+        float zoomSpeed = 2.4f; // Чувствительность зума
+
+        // Вычисляем направление от камеры к цели
+        Vector3f direction = new Vector3f(
+                camera.getTarget().getX() - camera.getPosition().getX(),
+                camera.getTarget().getY() - camera.getPosition().getY(),
+                camera.getTarget().getZ() - camera.getPosition().getZ()
+        );
+        direction.normalize();
+
+        // Приближаем или отдаляем камеру
+        if (delta > 0) {
+            camera.movePosition(new Vector3f(
+                    direction.getX() * zoomSpeed,
+                    direction.getY() * zoomSpeed,
+                    direction.getZ() * zoomSpeed
+            ));
+        } else {
+            camera.movePosition(new Vector3f(
+                    -direction.getX() * zoomSpeed,
+                    -direction.getY() * zoomSpeed,
+                    -direction.getZ() * zoomSpeed
+            ));
+        }
+    }
+
+    @FXML
     public void handleCanvasClick(MouseEvent mouseEvent) {
         canvas.requestFocus();
     }
@@ -458,12 +563,14 @@ public class GuiController {
 
     @FXML
     public void handleCameraLeft(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(TRANSLATION * 10, 0, 0));
+        camera.movePosition(new Vector3f(TRANSLATION * 5, 0, 0));
+        camera.moveTarget(new Vector3f(TRANSLATION * 5, 0, 0));
     }
 
     @FXML
     public void handleCameraRight(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(-TRANSLATION * 10, 0, 0));
+        camera.movePosition(new Vector3f(-TRANSLATION * 5, 0, 0));
+        camera.moveTarget(new Vector3f(-TRANSLATION * 5, 0, 0));
     }
 
     @FXML
@@ -474,6 +581,16 @@ public class GuiController {
     @FXML
     public void handleCameraDown(ActionEvent actionEvent) {
         camera.movePosition(new Vector3f(0, -TRANSLATION * 10, 0));
+    }
+
+    @FXML
+    public void turnCameraRight(ActionEvent actionEvent) {
+        camera.moveTarget(new Vector3f(-TRANSLATION * 5, 0, 0));
+    }
+
+    @FXML
+    public void turnCameraLeft(ActionEvent actionEvent) {
+        camera.moveTarget(new Vector3f(TRANSLATION * 5, 0, 0));
     }
 
 

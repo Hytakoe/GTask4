@@ -69,10 +69,20 @@
                     <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="UP" />
                 </accelerator>
             </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#turnCameraRight" text="TurnRight">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="D" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#turnCameraLeft" text="TurnLeft">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
         </Menu>
     </MenuBar>
 
-    <Canvas fx:id="canvas" height="870" onMouseClicked="#handleCanvasClick" width="1125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+    <Canvas fx:id="canvas" height="870" onMouseClicked="#handleCanvasClick" onMousePressed="#handleMousePressed" onMouseReleased="#handleMouseReleased" onMouseDragged="#handleMouseDragged" onScroll="#handleMouseScrolled" width="1125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
    <Pane fx:id="mainPane" layoutX="437.0" layoutY="132.0" prefHeight="880.0" prefWidth="430.0" styleClass="pane" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
        <AnchorPane layoutX="3.0" layoutY="37.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
             <children>
