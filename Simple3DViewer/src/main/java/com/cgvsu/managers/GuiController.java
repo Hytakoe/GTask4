@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 
@@ -100,8 +101,7 @@ public class GuiController {
 
     private List<Model> models = new ArrayList<>();
     private Model currentModel = null;
-    private Model modifiedMesh = null;
-
+    private HashMap<Model,Model> originalModels = new HashMap<>();
     private Camera camera = null;
     private List<Camera> cameras = new ArrayList<>();
     private Timeline timeline;
@@ -343,6 +343,7 @@ public class GuiController {
             String fileContent = Files.readString(file.toPath());
             Model newModel = ObjReader.read(fileContent);
             models.add(newModel);
+            originalModels.put(newModel, new Model(newModel));
             modelListView.getItems().add(newModel);
             modelListView.getSelectionModel().select(newModel);
         } catch (IOException exception) {
@@ -380,16 +381,16 @@ public class GuiController {
         if (currentModel == null) { // Проверяем текущую выбранную модель
             showAlert(AlertType.WARNING, "Предупреждение", "Пожалуйста, выберите модель перед сохранением.");
         } else {
-            onSaveModelMenuItemClick(currentModel); // Сохраняем текущую модель
+            onSaveModelMenuItemClick(originalModels.get(currentModel)); // Сохраняем оригинальную копию текущей модели
         }
     }
 
     @FXML
     private void onSaveModifiedModel(ActionEvent event) {
-        if (modifiedMesh == null) {
+        if (currentModel == null) {
             showAlert(Alert.AlertType.ERROR, "Ошибка", "Изменённая модель не загружена. Пожалуйста, создайте или загрузите изменённую модель перед сохранением.");
         } else {
-            onSaveModelMenuItemClick(modifiedMesh);
+            onSaveModelMenuItemClick(currentModel);
         }
     }
 
@@ -480,6 +481,7 @@ public class GuiController {
     private void handleDeleteModelButtonClick(ActionEvent event) {
         if (currentModel != null) {
             models.remove(currentModel);
+            originalModels.remove(currentModel);
             modelListView.getItems().remove(currentModel);
             currentModel = null;
             timeline.play();
@@ -556,6 +558,7 @@ public class GuiController {
     public void removeModel(Model model) {
         models.remove(model); // Удаляем модель из списка
         modelListView.getItems().remove(model); // Удаляем её из ListView
+        originalModels.remove(model);
         timeline.play(); // Перерисовываем сцену
     }
 

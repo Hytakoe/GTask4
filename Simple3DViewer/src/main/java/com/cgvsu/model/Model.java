@@ -31,6 +31,27 @@ public class Model {
         this.color = Color.WHITE;
     }
 
+    // Метод для глубокого копирования модели
+    public Model (Model other) {
+        for (Vector3f vertex : other.vertices) {
+            this.vertices.add(new Vector3f(vertex.getX(), vertex.getY(), vertex.getZ()));
+        }
+        for (Vector2f textureVertex : other.textureVertices) {
+            this.textureVertices.add(new Vector2f(textureVertex.getX(), textureVertex.getY()));
+        }
+        for (Vector3f normal : other.normals) {
+            this.normals.add(new Vector3f(normal.getX(), normal.getY(), normal.getZ()));
+        }
+        for (Polygon polygon : other.polygons) {
+            this.polygons.add(new Polygon(polygon));
+        }
+        this.name = null;
+        this.drawLines = false;
+        this.drawTexture = false;
+        this.useLight = false;
+        this.color = Color.WHITE;
+    }
+
     public String getName() {
         return name;
     }
