@@ -4,6 +4,7 @@ import com.cgvsu.affine_transformations.*;
 import com.cgvsu.model.NormalsCalculation;
 import com.cgvsu.model.Triangulator;
 import com.cgvsu.objwriter.ObjWriter;
+import com.cgvsu.render_engine.CameraCell;
 import com.cgvsu.render_engine.RenderEngine;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -22,12 +23,13 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-
+import javafx.scene.control.Alert.AlertType;
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import com.cgvsu.math.vector.Vector3f;
@@ -53,6 +55,9 @@ public class GuiController {
     @FXML
     private ToggleButton themeToggleButton;
 
+    @FXML
+    private ListView<Camera> cameraListView;
+
     private boolean isDarkTheme = false;
 
 
@@ -60,37 +65,30 @@ public class GuiController {
     private Model modifiedMesh = null;
     private BufferedImage texture;
 
-    private List<Camera> cameras = List.of(
-            new Camera(
-                    new Vector3f(0, 0, 100),
-                    new Vector3f(0, 0, 0),
-                    1.0F, 1, 0.01F, 100),
-            new Camera(
-                    new Vector3f(0, 0, 10),
-                    new Vector3f(0, 0, 0),
-                    1.0F, 1, 0.01F, 100),
-
-            new Camera(
-                    new Vector3f(10, 10, 10),
-                    new Vector3f(0, 0, 0),
-                    1.0F, 1, 0.01F, 100)
-    );
-    private Camera camera = new Camera(
-            new Vector3f(0, 0, 100),
-            new Vector3f(0, 0, 0),
-            1.0F, 1, 0.01F, 100);
-
+    private Camera camera = null;
+    private List<Camera> cameras = new ArrayList<>();
     private Timeline timeline;
-    //Это через текстовые поля в интерфейсе
-    public void addCamera(Camera camera){
-        this.cameras.add(camera);
-    }
-    //Это тоже чтобы можно было выбрать в интерфейсе
-    public void setCamera(int camera){
-        this.camera = cameras.get(camera);
-    }
     @FXML
     private void initialize() {
+
+        Camera mainCamera = new Camera(
+                new Vector3f(0, 0, 100),
+                new Vector3f(0, 0, 0),
+                1.0F, 1, 0.01F, 100
+        );
+        cameras.add(mainCamera);
+        this.camera = mainCamera;
+        cameraListView.setCellFactory(param -> new CameraCell(cameraListView, this));
+        cameraListView.getItems().addAll(cameras);
+        cameraListView.getSelectionModel().selectFirst();
+
+        cameraListView.getSelectionModel().selectedItemProperty().addListener((obs, oldCamera, newCamera) -> {
+            if (newCamera != null) {
+                this.camera = newCamera;
+                timeline.play();
+            }
+        });
+
         drawLines.bind(drawLinesCheckBox.selectedProperty());
         drawTexture.bind(drawTextureCheckBox.selectedProperty());
         useLight.bind(useLightCheckBox.selectedProperty());
@@ -176,6 +174,54 @@ public class GuiController {
         timeline.getKeyFrames().add(frame);
         timeline.play();
     }
+    @FXML
+    private TextField px, py, pz;
+    @FXML
+    private TextField tarx, tary, tarz;
+    @FXML
+    private void handleAddCamera(ActionEvent event) {
+        Camera newCamera = new Camera(
+                new Vector3f(Float.parseFloat(px.getText()), Float.parseFloat(py.getText()), Float.parseFloat(pz.getText())),
+                new Vector3f(Float.parseFloat(tarx.getText()), Float.parseFloat(tary.getText()), Float.parseFloat(tarz.getText())),
+                1.0F, 1, 0.01F, 100
+        );
+        addCamera(newCamera);
+    }
+    @FXML
+    private void applyCameraParams(ActionEvent event) {
+        if (camera == null) {
+            showAlert(AlertType.ERROR, "Ошибка", "Камера не выбрана.");
+            return;
+        }
+
+        try {
+            float posX = Float.parseFloat(px.getText());
+            float posY = Float.parseFloat(py.getText());
+            float posZ = Float.parseFloat(pz.getText());
+
+            float targetX = Float.parseFloat(tarx.getText());
+            float targetY = Float.parseFloat(tary.getText());
+            float targetZ = Float.parseFloat(tarz.getText());
+
+            camera.setPosition(new Vector3f(posX, posY, posZ));
+            camera.setTarget(new Vector3f(targetX, targetY, targetZ));
+            timeline.play();
+        } catch (NumberFormatException e) {
+            showAlert(AlertType.ERROR, "Ошибка", "Некорректные данные в текстовых полях.");
+            e.printStackTrace();
+        }
+    }
+    public void addCamera(Camera camera) {
+        cameras.add(camera);
+        cameraListView.getItems().add(camera);
+    }
+
+    public void removeCamera(Camera camera) {
+        if (cameras.size() > 1 && cameras.contains(camera)) {
+            cameras.remove(camera);
+            cameraListView.getItems().remove(camera);
+        }
+    }
 
     @FXML
     private void onOpenModelMenuItemClick() {
@@ -186,7 +232,7 @@ public class GuiController {
         String projectDir = System.getProperty("user.dir");
         fileChooser.setInitialDirectory(new File(projectDir));
 
-        File file = fileChooser.showOpenDialog((Stage) canvas.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
         if (file == null) {
             return;
         }
@@ -210,37 +256,25 @@ public class GuiController {
         String projectDir = System.getProperty("user.dir");
         fileChooser.setInitialDirectory(new File(projectDir));
 
-        File file = fileChooser.showSaveDialog((Stage) canvas.getScene().getWindow());
+        File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
         if (file == null) {
             return;
         }
 
         Path filePath = Path.of(file.getAbsolutePath());
-        Alert alert = new Alert(Alert.AlertType.NONE);
         try {
             String modelData = ObjWriter.write(modelToSave);
             Files.write(filePath, modelData.getBytes());
-
-            alert.setAlertType(Alert.AlertType.INFORMATION);
-            alert.setContentText("Модель успешно сохранена в файл: " + filePath);
-            alert.show();
         } catch (IOException exception) {
             exception.printStackTrace();
-
-            alert.setAlertType(Alert.AlertType.ERROR);
-            alert.setContentText("Ошибка при сохранении модели: " + exception.getMessage());
-            alert.show();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при сохранении модели: " + exception.getMessage());
         }
     }
 
     @FXML
     private void onSaveOriginalModel(ActionEvent event) {
         if (mesh == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Исходная модель не загружена");
-            alert.setContentText("Пожалуйста, загрузите модель перед сохранением.");
-            alert.showAndWait();
+            showAlert(AlertType.ERROR, "Ошибка", "Пожалуйста, загрузите модель перед сохранением.");
         } else {
             onSaveModelMenuItemClick(mesh);
         }
@@ -272,7 +306,7 @@ public class GuiController {
         String projectDir = System.getProperty("user.dir");
         fileChooser.setInitialDirectory(new File(projectDir));
 
-        File file = fileChooser.showOpenDialog((Stage) canvas.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
         if (file == null) {
             return;
         }
@@ -432,5 +466,14 @@ public class GuiController {
         String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
         anchorPane.getStylesheets().clear();
         anchorPane.getStylesheets().add(getClass().getResource(theme).toExternalForm());
+        themeToggleButton.setText(isDarkTheme ? "Light theme" : "Dark theme");
+    }
+
+    private void showAlert(AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
