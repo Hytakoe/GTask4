@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.GuiController">
+<AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.managers.GuiController">
     <MenuBar prefHeight="25.0" prefWidth="165.0">
         <Menu mnemonicParsing="false" text="File">
             <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
@@ -198,5 +198,19 @@
             </Button>
          </children></AnchorPane>
       <ListView fx:id="modelListView" layoutX="14.0" layoutY="667.0" prefHeight="200.0" prefWidth="200.0" />
+      <TextField fx:id="vertexIndexesField" layoutX="222.0" layoutY="722.0" prefHeight="30.0" prefWidth="144.0" promptText="0 3 8 10" styleClass="text-field">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <Text layoutX="244.0" layoutY="682.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Enter the vertex indexes separated by a space" wrappingWidth="155.90781249999986">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Button fx:id="deleteVertexes" layoutX="366.0" layoutY="722.0" mnemonicParsing="false" onAction="#handleDeleteVertexes" text="Delete">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
    </Pane>
 </AnchorPane>

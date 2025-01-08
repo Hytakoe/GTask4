@@ -1,4 +1,4 @@
-package com.cgvsu;
+package com.cgvsu.managers;
 
 import com.cgvsu.affine_transformations.*;
 import com.cgvsu.model.*;
@@ -23,6 +23,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import javafx.scene.control.Alert.AlertType;
+
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,10 +32,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
+
 import com.cgvsu.math.vector.Vector3f;
 
 import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
+
+import static com.cgvsu.model.ModelVertexRemover.parseVertexIndexes;
 
 public class GuiController {
     private final BooleanProperty drawLines = new SimpleBooleanProperty(false);
@@ -44,6 +48,7 @@ public class GuiController {
 
     @FXML
     AnchorPane anchorPane;
+
     @FXML
     Pane mainPane;
 
@@ -59,6 +64,38 @@ public class GuiController {
     @FXML
     private ListView<Model> modelListView;
 
+    @FXML
+    private TextField vertexIndexesField;
+
+    @FXML
+    private Button deleteVertexes;
+
+    @FXML
+    private TextField rx, ry, rz; // Поля для вращения
+    @FXML
+    private TextField sx, sy, sz; // Поля для масштабирования
+    @FXML
+    private TextField tx, ty, tz; // Поля для перемещения
+    @FXML
+    private TextField px, py, pz; // Поля для позиции камеры
+    @FXML
+    private TextField tarx, tary, tarz; // Поля для таргета камеры
+
+    @FXML
+    private CheckBox drawLinesCheckBox;
+
+    @FXML
+    private CheckBox drawTextureCheckBox;
+
+    @FXML
+    private CheckBox useLightCheckBox;
+
+    @FXML
+    private ColorPicker colorPicker;
+
+    @FXML
+    private Button deleteModelButton;
+
     private boolean isDarkTheme = false;
 
     private List<Model> models = new ArrayList<>();
@@ -68,6 +105,7 @@ public class GuiController {
     private Camera camera = null;
     private List<Camera> cameras = new ArrayList<>();
     private Timeline timeline;
+
     @FXML
     private void initialize() {
         Camera mainCamera = new Camera(
@@ -101,7 +139,7 @@ public class GuiController {
         drawTexture.bind(drawTextureCheckBox.selectedProperty());
         useLight.bind(useLightCheckBox.selectedProperty());
 
-        anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()- mainPane.getWidth()));
+        anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue() - mainPane.getWidth()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
         timeline = new Timeline();
@@ -109,7 +147,7 @@ public class GuiController {
 
         KeyFrame frame = new KeyFrame(Duration.millis(50), event -> renderScene());
         deleteModelButton.setOnAction(this::handleDeleteModelButtonClick);
-
+        deleteVertexes.setOnAction(event -> handleDeleteVertexes());
         canvas.setOnDragOver(event -> {
             if (event.getDragboard().hasFiles()) {
                 event.acceptTransferModes(TransferMode.COPY);
@@ -135,9 +173,7 @@ public class GuiController {
                     }
                 }
                 if (!success) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("Поддерживаются только файлы .obj и изображения (.png, .jpg, .jpeg)");
-                    alert.show();
+                    showAlert(Alert.AlertType.ERROR, "Ошибка", "Поддерживаются только файлы .obj и изображения (.png, .jpg, .jpeg)");
                 }
             }
             event.setDropCompleted(success);
@@ -199,15 +235,11 @@ public class GuiController {
                         ZBuffer);
             } catch (IOException e) {
                 e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при рендеринге модели: " + e.getMessage());
             }
         }
     }
 
-
-    @FXML
-    private TextField px, py, pz;
-    @FXML
-    private TextField tarx, tary, tarz;
     @FXML
     private void handleAddCamera(ActionEvent event) {
         Camera newCamera = new Camera(
@@ -217,6 +249,7 @@ public class GuiController {
         );
         addCamera(newCamera);
     }
+
     @FXML
     private void applyCameraParams(ActionEvent event) {
         if (camera == null) {
@@ -241,6 +274,7 @@ public class GuiController {
             e.printStackTrace();
         }
     }
+
     public void addCamera(Camera camera) {
         cameras.add(camera);
         cameraListView.getItems().add(camera);
@@ -251,6 +285,44 @@ public class GuiController {
             cameras.remove(camera);
             cameraListView.getItems().remove(camera);
         }
+    }
+
+    @FXML
+    private void handleDeleteVertexes() {
+        if (currentModel == null) {
+            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Сначала загрузите модель.");
+            return;
+        }
+
+        String input = vertexIndexesField.getText().trim();
+        if (input.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Введите индексы вершин.");
+            return;
+        }
+
+        List<Integer> vertexIndexes;
+        try {
+            vertexIndexes = parseVertexIndexes(input);
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Некорректный формат индексов.");
+            return;
+        }
+
+        List<Integer> missingVertices = new ArrayList<>();
+        for (int index : vertexIndexes) {
+            if (index < 0 || index >= currentModel.vertices.size()) {
+                missingVertices.add(index);
+            }
+        }
+
+        if (!missingVertices.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Следующие вершины отсутствуют в модели: " + missingVertices);
+            return;
+        }
+
+        ModelVertexRemover.removeVertices(currentModel, vertexIndexes);
+        updateUI();
+        timeline.play();
     }
 
     @FXML
@@ -278,6 +350,7 @@ public class GuiController {
             showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке модели: " + exception.getMessage());
         }
     }
+
     @FXML
     private void onSaveModelMenuItemClick(Model modelToSave) {
         FileChooser fileChooser = new FileChooser();
@@ -305,7 +378,7 @@ public class GuiController {
     @FXML
     private void onSaveOriginalModel(ActionEvent event) {
         if (currentModel == null) { // Проверяем текущую выбранную модель
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Пожалуйста, выберите модель перед сохранением.");
+            showAlert(AlertType.WARNING, "Предупреждение", "Пожалуйста, выберите модель перед сохранением.");
         } else {
             onSaveModelMenuItemClick(currentModel); // Сохраняем текущую модель
         }
@@ -314,15 +387,12 @@ public class GuiController {
     @FXML
     private void onSaveModifiedModel(ActionEvent event) {
         if (modifiedMesh == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Изменённая модель не загружена");
-            alert.setContentText("Пожалуйста, создайте или загрузите изменённую модель перед сохранением.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Изменённая модель не загружена. Пожалуйста, создайте или загрузите изменённую модель перед сохранением.");
         } else {
             onSaveModelMenuItemClick(modifiedMesh);
         }
     }
+
     private void loadTextureForModel(Model model, File file) {
         try {
             BufferedImage texture = ImageIO.read(file); // Загружаем текстуру
@@ -369,53 +439,43 @@ public class GuiController {
             showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке текстуры: " + exception.getMessage());
         }
     }
+
     @FXML
-    public void handleCanvasClick(MouseEvent mouseEvent){
+    public void handleCanvasClick(MouseEvent mouseEvent) {
         canvas.requestFocus();
     }
+
     @FXML
     public void handleCameraForward(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, 0, -TRANSLATION*10));
+        camera.movePosition(new Vector3f(0, 0, -TRANSLATION * 10));
     }
 
     @FXML
     public void handleCameraBackward(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, 0, TRANSLATION*10));
+        camera.movePosition(new Vector3f(0, 0, TRANSLATION * 10));
     }
 
     @FXML
     public void handleCameraLeft(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(TRANSLATION*10, 0, 0));
+        camera.movePosition(new Vector3f(TRANSLATION * 10, 0, 0));
     }
 
     @FXML
     public void handleCameraRight(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(-TRANSLATION*10, 0, 0));
+        camera.movePosition(new Vector3f(-TRANSLATION * 10, 0, 0));
     }
 
     @FXML
     public void handleCameraUp(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, TRANSLATION*10, 0));
+        camera.movePosition(new Vector3f(0, TRANSLATION * 10, 0));
     }
 
     @FXML
     public void handleCameraDown(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, -TRANSLATION*10, 0));
+        camera.movePosition(new Vector3f(0, -TRANSLATION * 10, 0));
     }
 
-    @FXML
-    private CheckBox drawLinesCheckBox;
 
-    @FXML
-    private CheckBox drawTextureCheckBox;
-
-    @FXML
-    private CheckBox useLightCheckBox;
-
-    @FXML
-    private ColorPicker colorPicker;
-    @FXML
-    private Button deleteModelButton;
     @FXML
     private void handleDeleteModelButtonClick(ActionEvent event) {
         if (currentModel != null) {
@@ -426,12 +486,6 @@ public class GuiController {
         }
     }
 
-    @FXML
-    private TextField rx, ry, rz; // Поля для вращения
-    @FXML
-    private TextField sx, sy, sz; // Поля для масштабирования
-    @FXML
-    private TextField tx, ty, tz; // Поля для перемещения
 
     @FXML
     private void applyTransformations() {
@@ -476,9 +530,7 @@ public class GuiController {
                 timeline.play();
             }
         } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Некорректные данные в одном из полей");
-            alert.show();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Некорректные данные в одном из полей");
         }
     }
 
@@ -497,9 +549,7 @@ public class GuiController {
             timeline.play(); // Обновляем отображение
         } catch (IOException exception) {
             exception.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Ошибка при загрузке файла: " + exception.getMessage());
-            alert.show();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке файла: " + exception.getMessage());
         }
     }
 
@@ -555,7 +605,7 @@ public class GuiController {
     }
 
     private void updateUI() {
-        if (currentModel == null){
+        if (currentModel == null) {
             return;
         }
         drawLinesCheckBox.setSelected(currentModel.isDrawLines());

@@ -1,6 +1,6 @@
 package com.cgvsu.render_engine;
 
-import com.cgvsu.GuiController;
+import com.cgvsu.managers.GuiController;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;

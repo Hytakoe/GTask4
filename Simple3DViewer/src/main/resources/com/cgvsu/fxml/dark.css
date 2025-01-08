@@ -88,3 +88,6 @@
     -fx-background-color: #990000;
     -fx-opacity: 0.6;
 }
+.text-field {
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.6);
+}

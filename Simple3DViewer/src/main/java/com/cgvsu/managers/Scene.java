@@ -1,4 +1,4 @@
-package com.cgvsu;
+package com.cgvsu.managers;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
