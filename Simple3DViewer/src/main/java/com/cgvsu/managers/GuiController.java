@@ -674,6 +674,9 @@ public class GuiController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
+        alert.getDialogPane().getStylesheets().clear();
+        alert.getDialogPane().getStylesheets().add(getClass().getResource(theme).toExternalForm());
         alert.showAndWait();
     }
 
