@@ -142,7 +142,7 @@ public class GuiController {
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
-        KeyFrame frame = new KeyFrame(Duration.millis(50), event -> renderScene());
+        KeyFrame frame = new KeyFrame(Duration.millis(100), event -> renderScene());
         deleteVertexes.setOnAction(event -> handleDeleteVertexes());
         canvas.setOnDragOver(event -> {
             if (event.getDragboard().hasFiles()) {
@@ -334,7 +334,7 @@ public class GuiController {
     @FXML
     public void handleMouseDragged(MouseEvent event) {
         if (isLeftDragging) {
-            // Вращение камеры (левая кнопка мыши)
+            // Перемещение камеры (левая кнопка мыши)
             double deltaX = event.getSceneX() - mousePosX;
             double deltaY = event.getSceneY() - mousePosY;
 
@@ -362,7 +362,6 @@ public class GuiController {
             Vector3f target = camera.getTarget();
             Vector3f position = camera.getPosition();
 
-            // Вектор "вверх" (обычно это ось Y)
             Vector3f up = new Vector3f(0, 1, 0);
 
             // Вращение вокруг оси Y (горизонтальное движение мыши)
@@ -379,9 +378,7 @@ public class GuiController {
             // Вращение вокруг оси X (вертикальное движение мыши)
             newPosition = GraphicConveyor.rotatePointAroundAxis(newPosition, target, right, (float) -deltaY * sensitivity);
 
-            // Обновляем позицию камеры
             camera.setPosition(newPosition);
-
             mousePosX = event.getSceneX();
             mousePosY = event.getSceneY();
         }
@@ -390,9 +387,8 @@ public class GuiController {
     @FXML
     public void handleMouseScrolled(ScrollEvent event) {
         double delta = event.getDeltaY(); // Получаем значение прокрутки колеса мыши
-        float zoomSpeed = 2.4f; // Чувствительность зума
+        float zoomSpeed = 2.4f; // Чувствительность zoom`а
 
-        // Вычисляем направление от камеры к цели
         Vector3f direction = new Vector3f(
                 camera.getTarget().getX() - camera.getPosition().getX(),
                 camera.getTarget().getY() - camera.getPosition().getY(),
@@ -400,7 +396,6 @@ public class GuiController {
         );
         direction.normalize();
 
-        // Приближаем или отдаляем камеру
         if (delta > 0) {
             camera.movePosition(new Vector3f(
                     direction.getX() * zoomSpeed,
