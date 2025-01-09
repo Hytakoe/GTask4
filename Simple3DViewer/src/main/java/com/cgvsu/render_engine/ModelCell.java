@@ -23,8 +23,8 @@ public class ModelCell extends ListCell<Model> {
         deleteButton.setOnAction(event -> {
             Model model = getItem();
             if (model != null) {
-                controller.removeModel(model); // Удаляем модель из контроллера
-                modelListView.getItems().remove(model); // Удаляем из списка
+                controller.removeModel(model);
+                modelListView.getItems().remove(model);
             }
         });
     }
@@ -36,12 +36,12 @@ public class ModelCell extends ListCell<Model> {
         if (empty || model == null) {
             setGraphic(null);
         } else {
-            modelName.setText("Model " + (getIndex() + 1)); // Устанавливаем имя модели
+            modelName.setText("Model " + (getIndex() + 1));
             if (!hbox.getChildren().contains(deleteButton)) {
-                hbox.getChildren().add(deleteButton); // Добавляем кнопку удаления
+                hbox.getChildren().add(deleteButton);
             }
 
-            setGraphic(hbox); // Устанавливаем HBox в качестве графического элемента
+            setGraphic(hbox);
         }
     }
 }

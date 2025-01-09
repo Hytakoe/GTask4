@@ -97,8 +97,10 @@ public class GuiController {
     private List<Model> models = new ArrayList<>();
     private Model currentModel = null;
     private HashMap<Model,Model> originalModels = new HashMap<>();
+
     private Camera camera = null;
     private List<Camera> cameras = new ArrayList<>();
+
     private Timeline timeline;
 
     @FXML
@@ -234,6 +236,12 @@ public class GuiController {
         }
     }
 
+
+
+
+
+
+    //Камера и всё что с ней связано
     @FXML
     private void handleAddCamera(ActionEvent event) {
         Camera newCamera = new Camera(
@@ -282,179 +290,45 @@ public class GuiController {
     }
 
     @FXML
-    private void handleDeleteVertexes() {
-        if (currentModel == null) {
-            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Сначала загрузите модель.");
-            return;
-        }
-
-        String input = vertexIndexesField.getText().trim();
-        if (input.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Введите индексы вершин.");
-            return;
-        }
-
-        List<Integer> vertexIndexes;
-        try {
-            vertexIndexes = parseVertexIndexes(input);
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Некорректный формат индексов.");
-            return;
-        }
-
-        List<Integer> missingVertices = new ArrayList<>();
-        for (int index : vertexIndexes) {
-            if (index < 0 || index >= currentModel.vertices.size()) {
-                missingVertices.add(index);
-            }
-        }
-
-        if (!missingVertices.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Следующие вершины отсутствуют в модели: " + missingVertices);
-            return;
-        }
-
-        ModelVertexRemover.removeVertices(currentModel, vertexIndexes);
-        updateUI();
-        timeline.play();
+    public void handleCameraForward(ActionEvent actionEvent) {
+        camera.movePosition(new Vector3f(0, 0, -TRANSLATION * 10));
     }
 
     @FXML
-    private void onOpenModelMenuItemClick() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
-        fileChooser.setTitle("Load Model");
-
-        String projectDir = System.getProperty("user.dir");
-        fileChooser.setInitialDirectory(new File(projectDir));
-
-        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
-        if (file == null) {
-            return;
-        }
-
-        try {
-            String fileContent = Files.readString(file.toPath());
-            Model newModel = ObjReader.read(fileContent);
-            models.add(newModel);
-            originalModels.put(newModel, new Model(newModel));
-            modelListView.getItems().add(newModel);
-            modelListView.getSelectionModel().select(newModel);
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке модели: " + exception.getMessage());
-        }
+    public void handleCameraBackward(ActionEvent actionEvent) {
+        camera.movePosition(new Vector3f(0, 0, TRANSLATION * 10));
     }
 
     @FXML
-    private void onSaveModelMenuItemClick(Model modelToSave) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
-        fileChooser.setTitle("Save Model");
-
-        String projectDir = System.getProperty("user.dir");
-        fileChooser.setInitialDirectory(new File(projectDir));
-
-        File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
-        if (file == null) {
-            return;
-        }
-
-        Path filePath = Path.of(file.getAbsolutePath());
-        try {
-            String modelData = ObjWriter.write(modelToSave);
-            Files.write(filePath, modelData.getBytes());
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при сохранении модели: " + exception.getMessage());
-        }
+    public void handleCameraLeft(ActionEvent actionEvent) {
+        camera.movePosition(new Vector3f(TRANSLATION * 5, 0, 0));
+        camera.moveTarget(new Vector3f(TRANSLATION * 5, 0, 0));
     }
 
     @FXML
-    private void onSaveOriginalModel(ActionEvent event) {
-        if (currentModel == null) { // Проверяем текущую выбранную модель
-            showAlert(AlertType.WARNING, "Предупреждение", "Пожалуйста, выберите модель перед сохранением.");
-        } else {
-            onSaveModelMenuItemClick(originalModels.get(currentModel)); // Сохраняем оригинальную копию текущей модели
-        }
+    public void handleCameraRight(ActionEvent actionEvent) {
+        camera.movePosition(new Vector3f(-TRANSLATION * 5, 0, 0));
+        camera.moveTarget(new Vector3f(-TRANSLATION * 5, 0, 0));
     }
 
     @FXML
-    private void onSaveModifiedModel(ActionEvent event) {
-        if (currentModel == null) {
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Изменённая модель не загружена. Пожалуйста, создайте или загрузите изменённую модель перед сохранением.");
-        } else {
-            onSaveModelMenuItemClick(currentModel);
-        }
-    }
-
-    private void loadTextureForModel(Model model, File file) {
-        try {
-            BufferedImage texture = ImageIO.read(file); // Загружаем текстуру
-            model.setTexture(texture); // Привязываем текстуру к модели
-            model.setTextureName(file.getName()); // Сохраняем имя файла текстуры
-            showAlert(Alert.AlertType.INFORMATION, "Успех", "Текстура успешно загружена и привязана к модели.");
-            timeline.play(); // Обновляем отображение
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке текстуры: " + exception.getMessage());
-        }
+    public void handleCameraUp(ActionEvent actionEvent) {
+        camera.movePosition(new Vector3f(0, TRANSLATION * 10, 0));
     }
 
     @FXML
-    private void onLoadTextureMenuItemClick() {
-        if (currentModel == null) {
-            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Сначала выберите модель для загрузки текстуры.");
-            return;
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load Texture");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif")
-        );
-
-        String projectDir = System.getProperty("user.dir");
-        fileChooser.setInitialDirectory(new File(projectDir));
-
-        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
-        if (file == null) {
-            return;
-        }
-
-        try {
-            BufferedImage texture = ImageIO.read(file); // Загружаем текстуру
-            currentModel.setTexture(texture); // Привязываем текстуру к текущей модели
-            currentModel.setTextureName(file.getName()); // Сохраняем имя файла текстуры
-            showAlert(Alert.AlertType.INFORMATION, "Успех", "Текстура успешно загружена и привязана к модели.");
-            timeline.play(); // Обновляем отображение
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке текстуры: " + exception.getMessage());
-        }
+    public void handleCameraDown(ActionEvent actionEvent) {
+        camera.movePosition(new Vector3f(0, -TRANSLATION * 10, 0));
     }
 
     @FXML
-    public void handleMousePressed(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY) { // ЛКМ
-            mousePosX = event.getSceneX();
-            mousePosY = event.getSceneY();
-            isLeftDragging = true;
-        } else if (event.getButton() == MouseButton.SECONDARY) { // ПКМ
-            mousePosX = event.getSceneX();
-            mousePosY = event.getSceneY();
-            isRightDragging = true;
-        }
+    public void turnCameraRight(ActionEvent actionEvent) {
+        camera.moveTarget(new Vector3f(-TRANSLATION * 5, 0, 0));
     }
 
     @FXML
-    public void handleMouseReleased(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY) {
-            isLeftDragging = false;
-        } else if (event.getButton() == MouseButton.SECONDARY) {
-            isRightDragging = false;
-        }
+    public void turnCameraLeft(ActionEvent actionEvent) {
+        camera.moveTarget(new Vector3f(TRANSLATION * 5, 0, 0));
     }
 
     @FXML
@@ -543,50 +417,102 @@ public class GuiController {
     }
 
     @FXML
-    public void handleCanvasClick(MouseEvent mouseEvent) {
-        canvas.requestFocus();
+    public void handleMousePressed(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) { // ЛКМ
+            mousePosX = event.getSceneX();
+            mousePosY = event.getSceneY();
+            isLeftDragging = true;
+        } else if (event.getButton() == MouseButton.SECONDARY) { // ПКМ
+            mousePosX = event.getSceneX();
+            mousePosY = event.getSceneY();
+            isRightDragging = true;
+        }
     }
 
     @FXML
-    public void handleCameraForward(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, 0, -TRANSLATION * 10));
+    public void handleMouseReleased(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            isLeftDragging = false;
+        } else if (event.getButton() == MouseButton.SECONDARY) {
+            isRightDragging = false;
+        }
+    }
+
+
+
+
+
+    //Модель
+    @FXML
+    private void handleDeleteVertexes() {
+        if (currentModel == null) {
+            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Сначала загрузите модель.");
+            return;
+        }
+
+        String input = vertexIndexesField.getText().trim();
+        if (input.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Введите индексы вершин.");
+            return;
+        }
+
+        List<Integer> vertexIndexes;
+        try {
+            vertexIndexes = parseVertexIndexes(input);
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Некорректный формат индексов.");
+            return;
+        }
+
+        List<Integer> missingVertices = new ArrayList<>();
+        for (int index : vertexIndexes) {
+            if (index < 0 || index >= currentModel.vertices.size()) {
+                missingVertices.add(index);
+            }
+        }
+
+        if (!missingVertices.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Следующие вершины отсутствуют в модели: " + missingVertices);
+            return;
+        }
+
+        ModelVertexRemover.removeVertices(currentModel, vertexIndexes);
+        updateUI();
+        timeline.play();
     }
 
     @FXML
-    public void handleCameraBackward(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, 0, TRANSLATION * 10));
+    private void onOpenModelMenuItemClick() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
+        fileChooser.setTitle("Load Model");
+
+        String projectDir = System.getProperty("user.dir");
+        fileChooser.setInitialDirectory(new File(projectDir));
+
+        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        try {
+            String fileContent = Files.readString(file.toPath());
+            Model newModel = ObjReader.read(fileContent);
+            models.add(newModel);
+            originalModels.put(newModel, new Model(newModel));
+            modelListView.getItems().add(newModel);
+            modelListView.getSelectionModel().select(newModel);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке модели: " + exception.getMessage());
+        }
     }
 
-    @FXML
-    public void handleCameraLeft(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(TRANSLATION * 5, 0, 0));
-        camera.moveTarget(new Vector3f(TRANSLATION * 5, 0, 0));
-    }
-
-    @FXML
-    public void handleCameraRight(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(-TRANSLATION * 5, 0, 0));
-        camera.moveTarget(new Vector3f(-TRANSLATION * 5, 0, 0));
-    }
-
-    @FXML
-    public void handleCameraUp(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, TRANSLATION * 10, 0));
-    }
-
-    @FXML
-    public void handleCameraDown(ActionEvent actionEvent) {
-        camera.movePosition(new Vector3f(0, -TRANSLATION * 10, 0));
-    }
-
-    @FXML
-    public void turnCameraRight(ActionEvent actionEvent) {
-        camera.moveTarget(new Vector3f(-TRANSLATION * 5, 0, 0));
-    }
-
-    @FXML
-    public void turnCameraLeft(ActionEvent actionEvent) {
-        camera.moveTarget(new Vector3f(TRANSLATION * 5, 0, 0));
+    public void removeModel(Model model) {
+        models.remove(model); // Удаляем модель из списка
+        modelListView.getItems().remove(model); // Удаляем её из ListView
+        originalModels.remove(model);
+        timeline.play(); // Перерисовываем сцену
     }
 
     @FXML
@@ -636,50 +562,11 @@ public class GuiController {
         }
     }
 
-    private boolean isImageFile(File file) {
-        String name = file.getName().toLowerCase();
-        return name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg");
-    }
 
-    private void loadModelFromFile(File file) {
-        try {
-            String fileContent = Files.readString(file.toPath());
-            Model newModel = ObjReader.read(fileContent); // Загружаем модель
-            models.add(newModel); // Добавляем в список моделей
-            modelListView.getItems().add(newModel); // Добавляем в интерфейс
-            modelListView.getSelectionModel().select(newModel); // Делаем её текущей
-            timeline.play(); // Обновляем отображение
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке файла: " + exception.getMessage());
-        }
-    }
 
-    public void removeModel(Model model) {
-        models.remove(model); // Удаляем модель из списка
-        modelListView.getItems().remove(model); // Удаляем её из ListView
-        originalModels.remove(model);
-        timeline.play(); // Перерисовываем сцену
-    }
 
-    private void setTheme(boolean isDarkTheme) {
-        String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
-        anchorPane.getStylesheets().clear();
-        anchorPane.getStylesheets().add(getClass().getResource(theme).toExternalForm());
-        themeToggleButton.setText(isDarkTheme ? "Soy theme" : "Dark theme");
-    }
 
-    private void showAlert(AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
-        alert.getDialogPane().getStylesheets().clear();
-        alert.getDialogPane().getStylesheets().add(getClass().getResource(theme).toExternalForm());
-        alert.showAndWait();
-    }
-
+    //CheckBoxes
     @FXML
     private void onDrawLinesCheckBoxAction() {
         if (currentModel != null) {
@@ -710,16 +597,80 @@ public class GuiController {
         }
     }
 
-    private void updateUI() {
-        if (currentModel == null) {
-            return;
+
+
+
+    //Load
+    private void loadTextureForModel(Model model, File file) {
+        try {
+            BufferedImage texture = ImageIO.read(file); // Загружаем текстуру
+            model.setTexture(texture); // Привязываем текстуру к модели
+            model.setTextureName(file.getName()); // Сохраняем имя файла текстуры
+            showAlert(Alert.AlertType.INFORMATION, "Успех", "Текстура успешно загружена и привязана к модели.");
+            timeline.play(); // Обновляем отображение
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке текстуры: " + exception.getMessage());
         }
-        drawLinesCheckBox.setSelected(currentModel.isDrawLines());
-        drawTextureCheckBox.setSelected(currentModel.isDrawTexture());
-        useLightCheckBox.setSelected(currentModel.isUseLight());
-        colorPicker.setValue(currentModel.getColor());
     }
 
+    private void loadModelFromFile(File file) {
+        try {
+            String fileContent = Files.readString(file.toPath());
+            Model newModel = ObjReader.read(fileContent); // Загружаем модель
+            models.add(newModel); // Добавляем в список моделей
+            modelListView.getItems().add(newModel); // Добавляем в интерфейс
+            modelListView.getSelectionModel().select(newModel); // Делаем её текущей
+            timeline.play(); // Обновляем отображение
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке файла: " + exception.getMessage());
+        }
+    }
+
+    @FXML
+    private void onLoadTextureMenuItemClick() {
+        if (currentModel == null) {
+            showAlert(Alert.AlertType.WARNING, "Предупреждение", "Сначала выберите модель для загрузки текстуры.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Texture");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif")
+        );
+
+        String projectDir = System.getProperty("user.dir");
+        fileChooser.setInitialDirectory(new File(projectDir));
+
+        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        try {
+            BufferedImage texture = ImageIO.read(file); // Загружаем текстуру
+            currentModel.setTexture(texture); // Привязываем текстуру к текущей модели
+            currentModel.setTextureName(file.getName()); // Сохраняем имя файла текстуры
+            showAlert(Alert.AlertType.INFORMATION, "Успех", "Текстура успешно загружена и привязана к модели.");
+            timeline.play(); // Обновляем отображение
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при загрузке текстуры: " + exception.getMessage());
+        }
+    }
+
+    private boolean isImageFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg");
+    }
+
+
+
+
+    //Save
     @FXML
     private void saveSceneAsSingleFile(ActionEvent event) {
         if (models.isEmpty()) {
@@ -748,5 +699,84 @@ public class GuiController {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при сохранении сцены: " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void onSaveModelMenuItemClick(Model modelToSave) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
+        fileChooser.setTitle("Save Model");
+
+        String projectDir = System.getProperty("user.dir");
+        fileChooser.setInitialDirectory(new File(projectDir));
+
+        File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        Path filePath = Path.of(file.getAbsolutePath());
+        try {
+            String modelData = ObjWriter.write(modelToSave);
+            Files.write(filePath, modelData.getBytes());
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Ошибка при сохранении модели: " + exception.getMessage());
+        }
+    }
+
+    @FXML
+    private void onSaveOriginalModel(ActionEvent event) {
+        if (currentModel == null) { // Проверяем текущую выбранную модель
+            showAlert(AlertType.WARNING, "Предупреждение", "Пожалуйста, выберите модель перед сохранением.");
+        } else {
+            onSaveModelMenuItemClick(originalModels.get(currentModel)); // Сохраняем оригинальную копию текущей модели
+        }
+    }
+
+    @FXML
+    private void onSaveModifiedModel(ActionEvent event) {
+        if (currentModel == null) {
+            showAlert(Alert.AlertType.ERROR, "Ошибка", "Изменённая модель не загружена. Пожалуйста, создайте или загрузите изменённую модель перед сохранением.");
+        } else {
+            onSaveModelMenuItemClick(currentModel);
+        }
+    }
+
+
+
+
+    //Прочее
+    @FXML
+    public void handleCanvasClick(MouseEvent mouseEvent) {
+        canvas.requestFocus();
+    }
+
+    private void setTheme(boolean isDarkTheme) {
+        String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
+        anchorPane.getStylesheets().clear();
+        anchorPane.getStylesheets().add(getClass().getResource(theme).toExternalForm());
+        themeToggleButton.setText(isDarkTheme ? "Soy theme" : "Dark theme");
+    }
+
+    private void showAlert(AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        String theme = isDarkTheme ? "/com/cgvsu/fxml/dark.css" : "/com/cgvsu/fxml/light.css";
+        alert.getDialogPane().getStylesheets().clear();
+        alert.getDialogPane().getStylesheets().add(getClass().getResource(theme).toExternalForm());
+        alert.showAndWait();
+    }
+
+    private void updateUI() {
+        if (currentModel == null) {
+            return;
+        }
+        drawLinesCheckBox.setSelected(currentModel.isDrawLines());
+        drawTextureCheckBox.setSelected(currentModel.isDrawTexture());
+        useLightCheckBox.setSelected(currentModel.isUseLight());
+        colorPicker.setValue(currentModel.getColor());
     }
 }

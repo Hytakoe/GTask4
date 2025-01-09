@@ -12,7 +12,7 @@ public class ModelVertexRemover {
             throw new IllegalArgumentException("Модель и список вершин для удаления не могут быть null.");
         }
 
-        // Удаляем вершины, текстурные координаты и нормали
+        // Удаляет вершины, текстурные координаты и нормали
         removeVerticesFromList(model.vertices, verticesToRemove);
         if (!model.textureVertices.isEmpty()) {
             removeVerticesFromList(model.textureVertices, verticesToRemove);
@@ -21,7 +21,7 @@ public class ModelVertexRemover {
             removeVerticesFromList(model.normals, verticesToRemove);
         }
 
-        // Обновляем полигоны
+        // Обновляет полигоны
         updatePolygons(model.polygons, verticesToRemove);
     }
 
@@ -39,24 +39,24 @@ public class ModelVertexRemover {
         Set<Integer> verticesToRemoveSet = new HashSet<>(verticesToRemove);
 
         for (Polygon polygon : polygons) {
-            // Обновляем индексы вершин
+            // Обновляет индексы вершин
             List<Integer> newVertexIndices = updateIndexes(polygon.getVertexIndices(), verticesToRemoveSet);
             polygon.setVertexIndices(new ArrayList<>(newVertexIndices));
 
-            // Обновляем индексы текстурных координат (если есть)
+            // Обновляет индексы текстурных координат (если есть)
             if (!polygon.getTextureVertexIndices().isEmpty()) {
                 List<Integer> newTextureVertexIndices = updateIndexes(polygon.getTextureVertexIndices(), verticesToRemoveSet);
                 polygon.setTextureVertexIndices(new ArrayList<>(newTextureVertexIndices));
             }
 
-            // Обновляем индексы нормалей (если есть)
+            // Обновляет индексы нормалей (если есть)
             if (!polygon.getNormalIndices().isEmpty()) {
                 List<Integer> newNormalIndices = updateIndexes(polygon.getNormalIndices(), verticesToRemoveSet);
                 polygon.setNormalIndices(new ArrayList<>(newNormalIndices));
             }
         }
 
-        // Удаляем полигоны, которые стали некорректными (менее 3 вершин)
+        // Удаляет полигоны, которые стали некорректными (менее 3 вершин)
         polygons.removeIf(polygon -> polygon.getVertexIndices().size() < 3);
     }
 
@@ -64,7 +64,7 @@ public class ModelVertexRemover {
         List<Integer> newIndices = new ArrayList<>();
         for (int index : indexes) {
             if (!verticesToRemoveSet.contains(index)) {
-                // Корректируем индекс, если вершины были удалены
+                // Корректирует индекс, если вершины были удалены
                 int newIndex = index - (int) verticesToRemoveSet.stream().filter(i -> i < index).count();
                 newIndices.add(newIndex);
             }
