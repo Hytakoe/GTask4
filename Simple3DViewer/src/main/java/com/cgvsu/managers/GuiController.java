@@ -92,9 +92,6 @@ public class GuiController {
     @FXML
     private ColorPicker colorPicker;
 
-    @FXML
-    private Button deleteModelButton;
-
     private boolean isDarkTheme = true;
 
     private List<Model> models = new ArrayList<>();
@@ -144,7 +141,6 @@ public class GuiController {
         timeline.setCycleCount(Animation.INDEFINITE);
 
         KeyFrame frame = new KeyFrame(Duration.millis(50), event -> renderScene());
-        deleteModelButton.setOnAction(this::handleDeleteModelButtonClick);
         deleteVertexes.setOnAction(event -> handleDeleteVertexes());
         canvas.setOnDragOver(event -> {
             if (event.getDragboard().hasFiles()) {
@@ -592,19 +588,6 @@ public class GuiController {
     public void turnCameraLeft(ActionEvent actionEvent) {
         camera.moveTarget(new Vector3f(TRANSLATION * 5, 0, 0));
     }
-
-
-    @FXML
-    private void handleDeleteModelButtonClick(ActionEvent event) {
-        if (currentModel != null) {
-            models.remove(currentModel);
-            originalModels.remove(currentModel);
-            modelListView.getItems().remove(currentModel);
-            currentModel = null;
-            timeline.play();
-        }
-    }
-
 
     @FXML
     private void applyTransformations() {

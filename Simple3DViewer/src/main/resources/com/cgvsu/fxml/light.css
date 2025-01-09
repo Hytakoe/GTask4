@@ -40,7 +40,13 @@
 
 .text {
     -fx-fill: black;
-}*/
+}
+#headerLabel-light {
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+*/
 .root {
     -fx-base: #f4e9d8; /* Мягкий бежевый */
     -fx-background: #f8f4e6; /* Светлый бежевый */
